@@ -703,8 +703,12 @@ function progress(){
   stage.appendChild(bar)
 }
 
-function maybeMiniEvidence(){
-  if(round!==3 && round!==6 && round!==9)return;
+function maybeMiniEvidence(onClose){
+  if(round!==3 && round!==6 && round!==9){
+    if(onClose)onClose();
+    return;
+  }
+  clearKeyHandler();
   const finds=[
     ['camera_agent.png','YOU FOUND A SECRET CAMERA!'],
     ['fingerprint.png','YOU FOUND A FINGERPRINT!'],
@@ -721,7 +725,10 @@ function maybeMiniEvidence(){
     <button>KEEP INVESTIGATING</button>
   </div>`;
   d.querySelector('.miniSpeak').appendChild(makeSpeaker(found[1]));
-  d.querySelector('button').onclick=()=>d.remove();
+  d.querySelector('button').onclick=()=>{
+    d.remove();
+    if(onClose)onClose();
+  };
   stage.appendChild(d);
   showFunConfetti(d)
 }
@@ -737,10 +744,7 @@ function correct(){
   if(newRank){setTimeout(()=>showRankUp(newRank,advance),350)}
   else{
     if(round===3||round===6||round===9){
-      setTimeout(()=>{
-        maybeMiniEvidence();
-        setTimeout(advance,900);
-      },250)
+      setTimeout(()=>maybeMiniEvidence(advance),250);
     }else advance()
   }
 }
@@ -976,65 +980,205 @@ document.getElementById('bonusChase').onclick=startBonusChase;
 document.getElementById('bonusVault').onclick=startBonusVault;
 
 // CASE 1
+const alphabetEvidenceBank=[
+  {seq:['A','B','C','D','E','F','G'], blanks:[1,4]},
+  {seq:['B','C','D','E','F','G','H'], blanks:[2,5]},
+  {seq:['C','D','E','F','G','H','I'], blanks:[1,5]},
+  {seq:['D','E','F','G','H','I','J'], blanks:[2,4]},
+  {seq:['E','F','G','H','I','J','K'], blanks:[1,4]},
+  {seq:['F','G','H','I','J','K','L'], blanks:[2,5]},
+  {seq:['G','H','I','J','K','L','M'], blanks:[1,5]},
+  {seq:['H','I','J','K','L','M','N'], blanks:[2,4]},
+  {seq:['I','J','K','L','M','N','O'], blanks:[1,4]},
+  {seq:['J','K','L','M','N','O','P'], blanks:[2,5]},
+  {seq:['K','L','M','N','O','P','Q'], blanks:[1,5]},
+  {seq:['L','M','N','O','P','Q','R'], blanks:[2,4]},
+  {seq:['M','N','O','P','Q','R','S'], blanks:[1,4]},
+  {seq:['N','O','P','Q','R','S','T'], blanks:[2,5]},
+  {seq:['O','P','Q','R','S','T','U'], blanks:[1,5]},
+  {seq:['P','Q','R','S','T','U','V'], blanks:[2,4]},
+  {seq:['Q','R','S','T','U','V','W'], blanks:[1,4]},
+  {seq:['R','S','T','U','V','W','X'], blanks:[2,5]},
+  {seq:['S','T','U','V','W','X','Y'], blanks:[1,5]},
+  {seq:['T','U','V','W','X','Y','Z'], blanks:[2,4]}
+];
+let lastAlphabetEvidence=-1;
+
 function missingLetter(){
-  const start=Math.floor(Math.random()*20);
-  const seq=[0,1,2,3,4,5,6].map(n=>String.fromCharCode(65+start+n));
-  const blanks=shuffle([1,2,3,4,5]).slice(0,2).sort((a,b)=>a-b);
+  let caseIndex=Math.floor(Math.random()*alphabetEvidenceBank.length);
+  if(alphabetEvidenceBank.length>1 && caseIndex===lastAlphabetEvidence){
+    caseIndex=(caseIndex+1)%alphabetEvidenceBank.length;
+  }
+  lastAlphabetEvidence=caseIndex;
+
+  const item=alphabetEvidenceBank[caseIndex];
+  const seq=[...item.seq];
+  const blanks=[...item.blanks];
   const answers=blanks.map(i=>seq[i]);
+
   const text='Two letters are missing. Press the missing letters from left to right.';
   setBriefing('🔤',text);
   const p=basePanel();
   p.innerHTML=`<div>
     <div class="smallPrompt">ALPHABET EVIDENCE</div>
     <div class="sequence" style="margin-top:25px">
-      ${seq.map((x,i)=>`<div class="seqBox ${blanks.includes(i)?"blank":""}">${blanks.includes(i)?"?":x}</div>`).join("")}
+      ${seq.map((x,i)=>`<div class="seqBox ${blanks.includes(i)?"blank":""}" ${blanks.includes(i)?`data-answer-index="${blanks.indexOf(i)}"`:""}>${blanks.includes(i)?"?":x}</div>`).join("")}
     </div>
-    <div class="hint" style="margin-top:25px">Press both missing letters in order.</div>
+    <div class="hint" style="margin-top:25px">Press both missing letters from left to right.</div>
   </div>`;
-  addPromptSpeaker(p,text);
-  listenForSequence(answers)
+  addPromptSpeaker(p,`${text} The visible letters are ${seq.map((x,i)=>blanks.includes(i)?'blank':x).join(', ')}.`);
+
+  const answerBoxes=[...p.querySelectorAll('[data-answer-index]')];
+  clearKeyHandler();
+  let idx=0;
+  keyHandler=e=>{
+    if(["Shift","Control","Alt","Meta","CapsLock"].includes(e.key))return;
+    if(!/^[a-zA-Z]$/.test(e.key))return;
+    const val=e.key.toUpperCase();
+    e.preventDefault();
+
+    if(val===answers[idx]){
+      answerBoxes[idx].textContent=answers[idx];
+      answerBoxes[idx].classList.remove('blank');
+      answerBoxes[idx].style.background='#dff7df';
+      idx++;
+      toast(idx>=answers.length ? "ALPHABET CLUE SOLVED! 🔎" : "GOOD! NOW THE NEXT BLANK.");
+      if(idx>=answers.length)setTimeout(correct,350);
+    }else{
+      toast(`LOOK AGAIN — THE NEXT MISSING LETTER IS NOT ${val}.`);
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
 }
 
 // CASE 2
 function capitalMatch(){
-  const letters=shuffle(Array.from({length:26},(_,i)=>String.fromCharCode(65+i))).slice(0,2);
-  const text=`Match both uppercase clues. Press lowercase ${letters[0]}, then lowercase ${letters[1]}.`;
+  const pool=Array.from({length:26},(_,i)=>String.fromCharCode(65+i));
+  const letters=shuffle(pool).slice(0,2);
+  const text=`Match both uppercase clues. Press lowercase ${letters[0].toLowerCase()}, then lowercase ${letters[1].toLowerCase()}. Do not use Shift.`;
   setBriefing('🅰️',text);
   const p=basePanel();
   p.innerHTML=`<div>
     <div class="smallPrompt">UPPERCASE EVIDENCE</div>
-    <div class="sequence" style="margin-top:22px">
+    <div class="sequence" style="margin-top:16px">
       <div class="seqBox">${letters[0]}</div>
       <div class="seqBox">${letters[1]}</div>
     </div>
-    <div class="smallPrompt" style="margin-top:22px">PRESS THE MATCHING LOWERCASE LETTERS IN ORDER</div>
+    <div class="smallPrompt" style="margin-top:18px">YOUR LOWERCASE MATCHES</div>
+    <div class="sequence" style="margin-top:10px">
+      <div class="seqBox blank answerFill">?</div>
+      <div class="seqBox blank answerFill">?</div>
+    </div>
+    <div class="hint" style="margin-top:15px">Press each letter key by itself — no Shift.</div>
   </div>`;
   addPromptSpeaker(p,text);
-  listenForSequence(letters)
+
+  const boxes=[...p.querySelectorAll('.answerFill')];
+  clearKeyHandler();
+  let idx=0;
+  keyHandler=e=>{
+    if(["Control","Alt","Meta","CapsLock"].includes(e.key))return;
+    if(e.key==="Shift")return;
+    if(!/^[a-zA-Z]$/.test(e.key))return;
+    e.preventDefault();
+
+    if(e.key!==e.key.toLowerCase()){
+      toast("LOWERCASE ONLY — DO NOT HOLD SHIFT.");
+      return;
+    }
+
+    if(e.key===letters[idx].toLowerCase()){
+      boxes[idx].textContent=e.key;
+      boxes[idx].classList.remove('blank');
+      boxes[idx].style.background='#dff7df';
+      idx++;
+      toast(idx>=letters.length ? "LOWERCASE MATCHES SOLVED! 🔎" : "GOOD! MATCH THE NEXT LETTER.");
+      if(idx>=letters.length)setTimeout(correct,350);
+    }else{
+      toast("CHECK THE UPPERCASE LETTER ABOVE.");
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
 }
 
 // CASE 3
 const emojiLetters=[
-  ["🍎","A"],["🐝","B"],["🐱","C"],["🐶","D"],["🥚","E"],["🐸","F"],["🍇","G"],
-  ["🎩","H"],["🍦","I"],["🧃","J"],["🔑","K"],["🦁","L"],["🌙","M"],["👃","N"],
-  ["🐙","O"],["🐷","P"],["👸","Q"],["🤖","R"],["☀️","S"],["🌳","T"],["☂️","U"],
-  ["🎻","V"],["🐋","W"],["❌","X"],["🪀","Y"],["🦓","Z"]
+  {emoji:'🍎',letter:'A',word:'apple'},
+  {emoji:'🐝',letter:'B',word:'bee'},
+  {emoji:'🐱',letter:'C',word:'cat'},
+  {emoji:'🐶',letter:'D',word:'dog'},
+  {emoji:'🥚',letter:'E',word:'egg'},
+  {emoji:'🐟',letter:'F',word:'fish'},
+  {emoji:'🍇',letter:'G',word:'grapes'},
+  {emoji:'🎩',letter:'H',word:'hat'},
+  {emoji:'🍦',letter:'I',word:'ice cream'},
+  {emoji:'🧃',letter:'J',word:'juice'},
+  {emoji:'🔑',letter:'K',word:'key'},
+  {emoji:'🦁',letter:'L',word:'lion'},
+  {emoji:'🌙',letter:'M',word:'moon'},
+  {emoji:'👃',letter:'N',word:'nose'},
+  {emoji:'🐙',letter:'O',word:'octopus'},
+  {emoji:'🐷',letter:'P',word:'pig'},
+  {emoji:'👸',letter:'Q',word:'queen'},
+  {emoji:'🤖',letter:'R',word:'robot'},
+  {emoji:'☀️',letter:'S',word:'sun'},
+  {emoji:'🌳',letter:'T',word:'tree'},
+  {emoji:'☂️',letter:'U',word:'umbrella'},
+  {emoji:'🎻',letter:'V',word:'violin'},
+  {emoji:'🐋',letter:'W',word:'whale'},
+  {emoji:'🪀',letter:'Y',word:'yo-yo'},
+  {emoji:'🦓',letter:'Z',word:'zebra'}
 ];
+let lastPicturePair='';
+
 function firstLetter(){
-  const pair=shuffle(emojiLetters).slice(0,2);
-  const answers=pair.map(x=>x[1]);
+  let pair=shuffle(emojiLetters).slice(0,2);
+  let pairKey=pair.map(x=>x.letter).join('');
+  if(pairKey===lastPicturePair){
+    pair=shuffle(emojiLetters).slice(0,2);
+    pairKey=pair.map(x=>x.letter).join('');
+  }
+  lastPicturePair=pairKey;
+
+  const answers=pair.map(x=>x.letter);
   const text='Look at both picture clues. Press the first letter of each picture from left to right.';
   setBriefing('🕵️‍♀️',text);
   const p=basePanel();
   p.innerHTML=`<div>
     <div class="sequence">
-      <div style="display:grid;place-items:center;gap:8px"><div class="bigPrompt">${pair[0][0]}</div><div class="seqBox blank">?</div></div>
-      <div style="display:grid;place-items:center;gap:8px"><div class="bigPrompt">${pair[1][0]}</div><div class="seqBox blank">?</div></div>
+      <div style="display:grid;place-items:center;gap:8px">
+        <div class="bigPrompt">${pair[0].emoji}</div>
+        <div class="seqBox blank pictureAnswer">?</div>
+      </div>
+      <div style="display:grid;place-items:center;gap:8px">
+        <div class="bigPrompt">${pair[1].emoji}</div>
+        <div class="seqBox blank pictureAnswer">?</div>
+      </div>
     </div>
     <div class="smallPrompt" style="margin-top:18px">PRESS BOTH FIRST LETTERS IN ORDER</div>
   </div>`;
-  addPromptSpeaker(p,text);
-  listenForSequence(answers)
+  addPromptSpeaker(p,`First picture: ${pair[0].word}. Second picture: ${pair[1].word}. Press the first letter of each word from left to right.`);
+
+  const boxes=[...p.querySelectorAll('.pictureAnswer')];
+  clearKeyHandler();
+  let idx=0;
+  keyHandler=e=>{
+    if(["Shift","Control","Alt","Meta","CapsLock"].includes(e.key))return;
+    if(!/^[a-zA-Z]$/.test(e.key))return;
+    const val=e.key.toUpperCase();
+    e.preventDefault();
+    if(val===answers[idx]){
+      boxes[idx].textContent=answers[idx];
+      boxes[idx].classList.remove('blank');
+      boxes[idx].style.background='#dff7df';
+      idx++;
+      toast(idx>=answers.length ? "PICTURE CLUES SOLVED! 🔎" : "GOOD! NOW THE NEXT PICTURE.");
+      if(idx>=answers.length)setTimeout(correct,350);
+    }else{
+      toast("CHECK THE PICTURE CLUE!");
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
 }
 
 // CASE 4
@@ -1079,7 +1223,7 @@ function countEvidence(){
 
 // CASE 6
 function missingNumber(){
-  const start=Math.floor(Math.random()*13); // 0-12, sequence ends <=18
+  const start=Math.floor(Math.random()*13);
   const seq=[start,start+1,start+2,start+3,start+4,start+5,start+6];
   const blanks=shuffle([1,2,3,4,5]).slice(0,2).sort((a,b)=>a-b);
   const answers=blanks.map(i=>String(seq[i]));
@@ -1089,12 +1233,13 @@ function missingNumber(){
   p.innerHTML=`<div>
     <div class="smallPrompt">NUMBER TRAIL</div>
     <div class="sequence" style="margin-top:25px">
-      ${seq.map((x,i)=>`<div class="seqBox ${blanks.includes(i)?"blank":""}">${blanks.includes(i)?"?":x}</div>`).join("")}
+      ${seq.map((x,i)=>`<div class="seqBox ${blanks.includes(i)?"blank":""}" ${blanks.includes(i)?`data-number-answer="${blanks.indexOf(i)}"`:""}>${blanks.includes(i)?"?":x}</div>`).join("")}
     </div>
     <div class="hint" style="margin-top:20px">Some missing numbers may have two digits.</div>
   </div>`;
   addPromptSpeaker(p,text);
 
+  const boxes=[...p.querySelectorAll('[data-number-answer]')];
   clearKeyHandler();
   let answerIndex=0, typed="";
   keyHandler=e=>{
@@ -1102,17 +1247,27 @@ function missingNumber(){
     e.preventDefault();
     const target=answers[answerIndex];
     typed += e.key;
+
+    // Show partial two-digit input as they type.
+    boxes[answerIndex].textContent=typed;
+    boxes[answerIndex].style.background='#fff8c9';
+
     if(!target.startsWith(typed)){
       typed="";
+      boxes[answerIndex].textContent='?';
+      boxes[answerIndex].style.background='';
       toast("CHECK THE NUMBER TRAIL!");
       return;
     }
     if(typed===target){
+      boxes[answerIndex].textContent=target;
+      boxes[answerIndex].classList.remove('blank');
+      boxes[answerIndex].style.background='#dff7df';
       answerIndex++;
       typed="";
       if(answerIndex>=answers.length){
         toast("NUMBER TRAIL SOLVED!");
-        setTimeout(correct,300);
+        setTimeout(correct,350);
       }else{
         toast("GOOD! FIND THE NEXT NUMBER.");
       }
@@ -1154,10 +1309,14 @@ function letterCode(){
   function paint(){
     p.innerHTML=`<div>
       <div class="smallPrompt">SECRET LETTER CODE</div>
-      <div class="sequence" style="margin-top:25px">
-        ${code.map((x,i)=>`<div class="seqBox" style="${i<idx?"background:#dff7df":i===idx?"background:#fff8c9":""}">${x}</div>`).join("")}
+      <div class="sequence" style="margin-top:16px">
+        ${code.map((x,i)=>`<div class="seqBox" style="${i===idx?"background:#fff8c9":""}">${x}</div>`).join("")}
       </div>
-      <div class="hint" style="margin-top:25px">Press the highlighted clue next.</div>
+      <div class="smallPrompt" style="margin-top:18px">YOUR CODE</div>
+      <div class="sequence" style="margin-top:10px">
+        ${code.map((x,i)=>`<div class="seqBox ${i>=idx?"blank":""}">${i<idx?x:"?"}</div>`).join("")}
+      </div>
+      <div class="hint" style="margin-top:18px">Press the letters from left to right.</div>
     </div>`
   }
   paint();
@@ -1168,9 +1327,10 @@ function letterCode(){
     const v=e.key.toUpperCase();
     e.preventDefault();
     if(v===code[idx]){
-      idx++;toast("GOOD CLUE!");
-      if(idx>=code.length){setTimeout(()=>showCodeReward(correct),250)}
-      else paint()
+      idx++;
+      toast(idx>=code.length?"CODE COMPLETE!":"GOOD CLUE!");
+      paint();
+      if(idx>=code.length){setTimeout(()=>showCodeReward(correct),350)}
     }else toast("THAT LETTER DOESN'T MATCH!")
   };
   window.addEventListener("keydown",keyHandler)
@@ -1185,10 +1345,14 @@ function numberCode(){
   function paint(){
     p.innerHTML=`<div>
       <div class="smallPrompt">SECRET NUMBER CODE</div>
-      <div class="sequence" style="margin-top:25px">
-        ${code.map((x,i)=>`<div class="seqBox" style="${i<idx?"background:#dff7df":i===idx?"background:#fff8c9":""}">${x}</div>`).join("")}
+      <div class="sequence" style="margin-top:16px">
+        ${code.map((x,i)=>`<div class="seqBox" style="${i===idx?"background:#fff8c9":""}">${x}</div>`).join("")}
       </div>
-      <div class="hint" style="margin-top:25px">Press the highlighted number next.</div>
+      <div class="smallPrompt" style="margin-top:18px">YOUR CODE</div>
+      <div class="sequence" style="margin-top:10px">
+        ${code.map((x,i)=>`<div class="seqBox ${i>=idx?"blank":""}">${i<idx?x:"?"}</div>`).join("")}
+      </div>
+      <div class="hint" style="margin-top:18px">Press the numbers from left to right.</div>
     </div>`
   }
   paint();
@@ -1198,9 +1362,10 @@ function numberCode(){
     if(!/^[0-9]$/.test(e.key))return;
     e.preventDefault();
     if(Number(e.key)===code[idx]){
-      idx++;toast("CODE CLUE FOUND!");
-      if(idx>=code.length){setTimeout(()=>showCodeReward(correct),250)}
-      else paint()
+      idx++;
+      toast(idx>=code.length?"CODE COMPLETE!":"CODE MATCH!");
+      paint();
+      if(idx>=code.length){setTimeout(()=>showCodeReward(correct),350)}
     }else toast("WRONG NUMBER — TRY AGAIN!")
   };
   window.addEventListener("keydown",keyHandler)
