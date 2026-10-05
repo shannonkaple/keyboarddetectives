@@ -1,33 +1,20 @@
-MS. KAPLE'S KEYBOARD DETECTIVE AGENCY — V6.1 ALPHABET FIX
+MS. KAPLE'S KEYBOARD DETECTIVE AGENCY — V6.2 TYPED BLANKS
 
-Alphabet cases were rebuilt for reliability:
+INPUT FEEDBACK FIX:
+- Whenever a student types a LETTER answer, the exact key they pressed is shown immediately in the current blank.
+- Correct letters stay in the blank and turn green.
+- Incorrect letters appear in the blank in red/pink for a moment, then that same blank resets to ?.
+- This applies to:
+  • Alphabet Evidence
+  • Capital Clue
+  • First-Letter File
+  • Letter Code Breaker
+  • Mixed letter/number Vault Mission
+- Students can visually follow exactly what they are typing instead of wondering whether the keyboard registered it.
 
-CASE 1 — ALPHABET EVIDENCE
-- Uses a curated bank of 20 exact A–Z sequences.
-- Every sequence is exactly 7 consecutive letters.
-- Two missing letters are always correct and never adjacent.
-- No wraparound or generated character math.
-- Typed letters visibly fill the exact blank they answer.
-- All 20 sequence patterns were programmatically validated.
+MIXED CODES:
+- The bonus vault never uses capital O.
+- The bonus vault never uses the number 0.
+- Mixed codes use A–Z except O, plus digits 1–9.
 
-CASE 2 — CAPITAL CLUE
-- Always shows uppercase evidence.
-- Students enter the matching LOWERCASE letters.
-- Shifted uppercase typing is no longer accepted as lowercase.
-- Correct lowercase letters visibly fill the answer boxes.
-
-CASE 3 — FIRST-LETTER FILE
-- Rebuilt with clear, curated emoji-to-word mappings.
-- Q is QUEEN.
-- Ambiguous X clue was removed.
-- The speaker identifies the intended picture words so the clue cannot be misread.
-- Typed answers visibly fill the picture blanks.
-
-Everything else from V6 remains:
-- rewards stay until closed
-- badge levels
-- bonus missions
-- speakers
-- Creative Clips art
-- saved progress
-- auto-fit
+All V6.1 fixes and prior game features remain.
