@@ -197,6 +197,168 @@ main{padding:14px}
 .rewardBox button{border:4px solid #17202a;border-radius:14px;padding:10px 18px;background:#ffd84a;font-weight:900;cursor:pointer}
 .agentCorner{position:absolute;right:16px;bottom:55px;width:155px;height:180px;object-fit:contain;opacity:.95;pointer-events:none}
 
+
+.rankHome{
+  max-width:1380px;margin:0 auto 14px;border:5px solid #17202a;border-radius:20px;background:white;
+  padding:10px 15px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:15px;
+  box-shadow:0 5px 0 #17202a
+}
+.rankHome img{width:88px;height:88px;object-fit:contain}
+.rankHome .rankTitle{font-family:Homebody,VAG,sans-serif;text-transform:uppercase;font-size:clamp(24px,2.4vw,37px)}
+.rankHome .rankSub{font-size:17px;margin-top:2px}
+.rankProgress{height:20px;border:3px solid #17202a;border-radius:999px;background:#eef3f6;overflow:hidden;margin-top:7px}
+.rankProgress>div{height:100%;background:#ffd84a;transition:.3s}
+.rankPoints{font-size:20px;text-align:center;white-space:nowrap}
+.rankChip{
+  border:4px solid #17202a;border-radius:999px;background:#fff8c9;padding:4px 10px;
+  display:flex;align-items:center;gap:7px;font-size:15px;font-weight:900
+}
+.rankChip img{width:38px;height:38px;object-fit:contain}
+.rankUp{
+  position:absolute;inset:0;z-index:95;background:rgba(239,247,252,.97);display:grid;place-items:center;text-align:center
+}
+.rankUpBox{
+  min-width:min(650px,86%);border:7px solid #17202a;border-radius:28px;background:white;
+  padding:26px 40px;box-shadow:0 9px 0 #17202a
+}
+.rankUpBox img{width:190px;height:190px;object-fit:contain}
+.rankUpBox h2{
+  font-family:Homebody,VAG,sans-serif;text-transform:uppercase;font-size:clamp(50px,7vw,92px);
+  margin:0;color:#b88000
+}
+.rankUpBox h3{
+  font-family:Homebody,VAG,sans-serif;text-transform:uppercase;font-size:clamp(29px,4vw,52px);
+  margin:5px 0 8px
+}
+.rankUpBox p{font-size:22px;margin:7px 0 15px}
+.rankUpBox button{
+  border:4px solid #17202a;border-radius:14px;padding:10px 20px;background:#ffd84a;
+  font-family:VAG,sans-serif;font-size:20px;cursor:pointer
+}
+@media(max-width:700px){
+  .rankHome{grid-template-columns:auto 1fr}
+  .rankPoints{grid-column:1/-1}
+}
+
+
+.bonusHeader{
+  max-width:1380px;margin:24px auto 10px;font-family:Homebody,VAG,sans-serif;
+  text-transform:uppercase;font-size:clamp(30px,3vw,46px);text-align:center
+}
+.bonusGrid{
+  max-width:1380px;margin:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px
+}
+.bonusCard{
+  border:6px solid #17202a;border-radius:22px;background:white;overflow:hidden;cursor:pointer;
+  box-shadow:0 6px 0 #17202a;padding:0;display:grid;grid-template-rows:auto 1fr auto
+}
+.bonusCard:active{transform:translateY(3px);box-shadow:0 3px 0 #17202a}
+.bonusTitle{
+  font-family:Homebody,VAG,sans-serif;text-transform:uppercase;font-size:clamp(24px,2.3vw,38px);
+  padding:10px;border-bottom:4px solid #17202a
+}
+.chaseBonus .bonusTitle{background:#7ee0ff}.vaultBonus .bonusTitle{background:#ffd84a}
+.bonusVisual{
+  min-height:190px;display:flex;align-items:center;justify-content:center;gap:18px;padding:12px;
+  background:linear-gradient(#f8fcff,#e9f6fb);position:relative
+}
+.bonusVisual img{width:150px;height:160px;object-fit:contain}
+.chaseArrow{font-size:70px;animation:pulseArrow .8s ease-in-out infinite alternate}
+.vaultDigits{
+  border:5px solid #17202a;border-radius:18px;padding:12px 18px;background:#17202a;color:white;
+  font-size:42px;letter-spacing:9px;font-family:VAG,sans-serif
+}
+.bonusDesc{padding:10px 14px;font-size:18px;text-align:center}
+@keyframes pulseArrow{from{transform:translateX(-7px)}to{transform:translateX(7px)}}
+
+.chaseScene{
+  position:absolute;inset:0;overflow:hidden;background:
+  linear-gradient(#a8e4ff 0 58%,#6f8794 58% 62%,#263744 62% 100%)
+}
+.cityBuilding{
+  position:absolute;bottom:0;background:#1d2a36;border:4px solid #101820
+}
+.cityBuilding:before{
+  content:"";position:absolute;inset:12px;
+  background:repeating-linear-gradient(90deg,#ffd969 0 18px,transparent 18px 42px),
+             repeating-linear-gradient(0deg,#ffd969 0 16px,transparent 16px 40px);
+  opacity:.55
+}
+.chaseTrack{
+  position:absolute;left:7%;right:7%;bottom:100px;height:260px;
+  border-bottom:6px dashed rgba(255,255,255,.55)
+}
+.chaseAgent,.chaseSuspect{
+  position:absolute;bottom:12px;width:160px;height:210px;object-fit:contain;
+  transition:left .45s ease;filter:drop-shadow(0 5px 3px rgba(0,0,0,.3))
+}
+.chaseAgent{left:0}.chaseSuspect{right:0;transform:scaleX(-1)}
+.chasePrompt{
+  position:absolute;left:50%;top:35px;transform:translateX(-50%);
+  min-width:360px;border:5px solid #17202a;border-radius:22px;background:white;
+  text-align:center;padding:12px 24px;box-shadow:0 6px 0 #17202a
+}
+.chasePrompt .targetKey{font-size:90px;font-family:Homebody,VAG,sans-serif}
+.chaseMeter{
+  position:absolute;left:12%;right:12%;bottom:36px;height:34px;border:5px solid #17202a;
+  border-radius:999px;background:white;overflow:hidden
+}
+.chaseMeterFill{height:100%;width:0%;background:#65d66f;transition:.4s}
+.catchFlash{
+  position:absolute;inset:0;background:rgba(255,226,69,.72);z-index:50;display:grid;place-items:center;
+  font-family:Homebody,VAG,sans-serif;font-size:clamp(60px,10vw,150px);text-align:center
+}
+
+.vaultScene{
+  position:absolute;inset:0;background:linear-gradient(135deg,#152231,#31465d);
+  display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:40px
+}
+.vaultDoor{
+  border:8px solid #0b1118;border-radius:34px;background:#6f7b83;position:relative;
+  display:grid;place-items:center;box-shadow:inset 0 0 0 12px #8f9ba3
+}
+.vaultWheel{
+  width:190px;height:190px;border:15px solid #26333d;border-radius:50%;position:relative
+}
+.vaultWheel:before,.vaultWheel:after{
+  content:"";position:absolute;left:50%;top:50%;background:#26333d;transform:translate(-50%,-50%)
+}
+.vaultWheel:before{width:240px;height:18px}.vaultWheel:after{width:18px;height:240px}
+.vaultPanel{
+  border:6px solid #17202a;border-radius:24px;background:white;padding:22px;display:grid;
+  align-content:center;justify-items:center;text-align:center
+}
+.vaultCode{
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0
+}
+.codeCell{
+  width:78px;height:88px;border:5px solid #17202a;border-radius:16px;background:#f7f9fb;
+  display:grid;place-items:center;font-size:44px;font-family:VAG,sans-serif
+}
+.codeCell.active{background:#fff8c9}
+.vaultReward{
+  position:absolute;inset:0;z-index:60;background:rgba(250,253,255,.97);display:grid;place-items:center;text-align:center
+}
+.vaultRewardBox{
+  border:7px solid #17202a;border-radius:28px;background:white;padding:28px 42px;box-shadow:0 9px 0 #17202a
+}
+.vaultRewardBox img{width:200px;height:200px;object-fit:contain}
+.vaultRewardBox h2{
+  font-family:Homebody,VAG,sans-serif;text-transform:uppercase;font-size:clamp(48px,7vw,90px);margin:4px
+}
+.funConfetti{
+  position:absolute;font-size:38px;pointer-events:none;animation:fallConfetti 1.5s ease-in forwards
+}
+@keyframes fallConfetti{
+  from{transform:translateY(-80px) rotate(0);opacity:1}
+  to{transform:translateY(580px) rotate(540deg);opacity:0}
+}
+@media(max-width:850px){
+  .bonusGrid{grid-template-columns:1fr}
+  .vaultScene{grid-template-columns:1fr;padding:20px}
+  .vaultDoor{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -220,7 +382,30 @@ main{padding:14px}
 <main>
   <section id="home" class="view active">
     <div class="case-note">🔎 DETECTIVES: CHOOSE A CASE FILE AND USE YOUR KEYBOARD TO SOLVE IT!</div>
+    <div id="agencyRankHome" class="rankHome"></div>
     <div id="caseGrid" class="case-grid"></div>
+    <div class="bonusHeader">BONUS MISSIONS</div>
+    <div class="bonusGrid">
+      <button class="bonusCard chaseBonus" id="bonusChase">
+        <div class="bonusTitle">MISSION: CATCH THE SUSPECT</div>
+        <div class="bonusVisual">
+          <img src="agent_boy.png" alt="">
+          <div class="chaseArrow">➡</div>
+          <img src="agent_girl.png" alt="" style="transform:scaleX(-1)">
+        </div>
+        <div class="bonusDesc">Press the right letters and numbers to catch the suspect!</div>
+      </button>
+      <button class="bonusCard vaultBonus" id="bonusVault">
+        <div class="bonusTitle">MISSION: CRACK THE VAULT</div>
+        <div class="bonusVisual">
+          <img src="briefcase.png" alt="">
+          <div class="vaultDigits">1 2 3 ?</div>
+          <img src="badge_gold.png" alt="">
+        </div>
+        <div class="bonusDesc">Solve secret keyboard codes to unlock surprise rewards!</div>
+      </button>
+    </div>
+
     
   </section>
 
@@ -229,8 +414,9 @@ main{padding:14px}
       <div id="gameTop">
         <div id="gameTitle"></div>
         <div class="badges">
-          <div class="badge">⭐ SCORE: <span id="score">0</span></div>
+          <div class="badge">⭐ CASE SCORE: <span id="score">0</span></div>
           <div class="badge">🔍 CLUE: <span id="round">1</span>/10</div>
+          <div id="rankChip" class="rankChip"></div>
         </div>
       </div>
       <div id="briefing"></div>
@@ -246,42 +432,42 @@ main{padding:14px}
 const cases = [
   {
     title:"CASE 1: THE MISSING LETTER",
-    desc:"Find the letter that disappeared.",
+    desc:"Find two letters that disappeared.",
     icon:"🔤", cls:"c1", type:"missingLetter"
   },
   {
     title:"CASE 2: CAPITAL CLUE",
-    desc:"Match the uppercase and lowercase letter.",
+    desc:"Match two uppercase clues to lowercase keys.",
     icon:"🅰️", cls:"c2", type:"capitalMatch"
   },
   {
     title:"CASE 3: FIRST-LETTER FILE",
-    desc:"Use the emoji clue to find its first letter.",
+    desc:"Solve two picture clues in order.",
     icon:"🍎", cls:"c3", type:"firstLetter"
   },
   {
     title:"CASE 4: NUMBER HUNT",
-    desc:"Press the number shown in the evidence.",
+    desc:"Compare three evidence numbers.",
     icon:"🔢", cls:"c4", type:"numberHunt"
   },
   {
     title:"CASE 5: COUNT THE EVIDENCE",
-    desc:"Count the clues and press the number.",
+    desc:"Count up to 12 pieces of evidence.",
     icon:"🔎", cls:"c5", type:"countEvidence"
   },
   {
     title:"CASE 6: BEFORE & AFTER",
-    desc:"Find the missing number in the sequence.",
+    desc:"Find two missing numbers in the trail.",
     icon:"🧩", cls:"c6", type:"missingNumber"
   },
   {
     title:"CASE 7: LETTER CODE BREAKER",
-    desc:"Press the letters in the secret code.",
+    desc:"Crack a four-letter secret code.",
     icon:"🔐", cls:"c7", type:"letterCode"
   },
   {
     title:"CASE 8: NUMBER CODE BREAKER",
-    desc:"Press the numbers in the secret code.",
+    desc:"Crack a five-number secret code.",
     icon:"💻", cls:"c8", type:"numberCode"
   }
 ];
@@ -310,7 +496,7 @@ function autoFit(){
     const vh = (window.visualViewport && window.visualViewport.height) || innerHeight || 768;
     const onHome = home.classList.contains("active");
     const designW = 1480;
-    const designH = onHome ? 900 : 900;
+    const designH = onHome ? 1260 : 900;
     let s = Math.min((vw-14)/designW,(vh-14)/designH,1);
     s = Math.max(.52,Math.min(1,s));
     document.body.style.zoom = s.toFixed(3);
@@ -354,6 +540,72 @@ function addPromptSpeaker(panel,text){
   const wrap=document.createElement('div');wrap.className='promptSpeaker';
   wrap.appendChild(makeSpeaker(text));
   panel.appendChild(wrap)
+}
+
+
+const AGENCY_RANKS=[
+  {min:0,  next:10,  title:'AGENT IN TRAINING', img:'badge_bw.png'},
+  {min:10, next:25,  title:'JUNIOR DETECTIVE', img:'badge_silver.png'},
+  {min:25, next:45,  title:'SPECIAL AGENT', img:'badge2_silver.png'},
+  {min:45, next:70,  title:'MASTER DETECTIVE', img:'badge_gold.png'},
+  {min:70, next:null, title:'CHIEF INVESTIGATOR', img:'badge2_gold.png'}
+];
+function getAgencyPoints(){return Number(localStorage.getItem('msKapleDetective_agencyPoints')||0)}
+function setAgencyPoints(v){
+  localStorage.setItem('msKapleDetective_agencyPoints',String(Math.max(0,v)));
+  updateRankDisplays()
+}
+function rankIndexFor(points){
+  let idx=0;
+  AGENCY_RANKS.forEach((r,i)=>{if(points>=r.min)idx=i});
+  return idx
+}
+function currentRank(){
+  const pts=getAgencyPoints();
+  return {index:rankIndexFor(pts),points:pts,...AGENCY_RANKS[rankIndexFor(pts)]}
+}
+function updateRankDisplays(){
+  const r=currentRank();
+  const homeBox=document.getElementById('agencyRankHome');
+  const chip=document.getElementById('rankChip');
+  const within=r.next ? r.points-r.min : 1;
+  const span=r.next ? r.next-r.min : 1;
+  const pct=r.next ? Math.max(0,Math.min(100,(within/span)*100)) : 100;
+  const nextText=r.next ? `${r.next-r.points} more clue${r.next-r.points===1?'':'s'} to next badge` : 'TOP AGENCY RANK!';
+  if(homeBox){
+    homeBox.innerHTML=`
+      <img src="${r.img}" alt="">
+      <div>
+        <div class="rankTitle">${r.title}</div>
+        <div class="rankSub">${nextText}</div>
+        <div class="rankProgress"><div style="width:${pct}%"></div></div>
+      </div>
+      <div class="rankPoints">🕵️ ${r.points}<br>AGENCY POINTS</div>`;
+  }
+  if(chip){
+    chip.innerHTML=`<img src="${r.img}" alt=""><span>${r.title}<br>${r.points} PTS</span>`;
+  }
+}
+function awardAgencyPoint(){
+  const before=currentRank();
+  setAgencyPoints(before.points+1);
+  const after=currentRank();
+  return after.index>before.index ? after : null
+}
+function showRankUp(rank,afterContinue){
+  clearKeyHandler();
+  const d=document.createElement('div');d.className='rankUp';
+  d.innerHTML=`<div class="rankUpBox">
+    <img src="${rank.img}" alt="">
+    <h2>RANK UP!</h2>
+    <h3>${rank.title}</h3>
+    <p>You earned a new agency badge!</p>
+    <div class="readable rankSpeak"></div>
+    <button>CONTINUE CASE</button>
+  </div>`;
+  d.querySelector('.rankSpeak').appendChild(makeSpeaker(`Rank up! You are now ${rank.title}. You earned a new agency badge.`));
+  d.querySelector('button').onclick=()=>{d.remove();afterContinue()};
+  stage.appendChild(d)
 }
 
 function getSaved(type){return Number(localStorage.getItem(savedKey(type))||0)}
@@ -417,6 +669,7 @@ function showHome(){
   clearKeyHandler();
   game.classList.remove("active");
   home.classList.add("active");
+  updateRankDisplays();
   setTimeout(autoFit,0);
 }
 function startCase(i){
@@ -426,6 +679,7 @@ function startCase(i){
   gameTitle.textContent=cases[current].title;
   score=getSaved(cases[current].type);
   scoreEl.textContent=score;
+  updateRankDisplays();
   setRound(1);
   setupCase();
   setTimeout(autoFit,0);
@@ -438,6 +692,7 @@ document.getElementById("homeBtn").onclick=showHome;
 document.getElementById("restartBtn").onclick=restartCase;
 document.getElementById("prevBtn").onclick=()=>startCase(current-1);
 document.getElementById("nextBtn").onclick=()=>startCase(current+1);
+updateRankDisplays();
 
 function basePanel(){
   const p=document.createElement("div");p.className="panel";stage.appendChild(p);return p;
@@ -447,16 +702,54 @@ function progress(){
   bar.innerHTML=`<div class="progressFill" style="width:${((round-1)/10)*100}%"></div>`;
   stage.appendChild(bar)
 }
+
+function maybeMiniEvidence(){
+  if(round!==3 && round!==6 && round!==9)return;
+  const finds=[
+    ['camera_agent.png','YOU FOUND A SECRET CAMERA!'],
+    ['fingerprint.png','YOU FOUND A FINGERPRINT!'],
+    ['radio.png','YOU FOUND A SPY RADIO!'],
+    ['briefcase.png','YOU FOUND A SECRET BRIEFCASE!']
+  ];
+  const found=finds[Math.floor(Math.random()*finds.length)];
+  const d=document.createElement('div');d.className='reward';
+  d.innerHTML=`<div class="rewardBox">
+    <img src="${found[0]}" alt="">
+    <h2>EVIDENCE FOUND!</h2>
+    <p>${found[1]}</p>
+    <div class="readable miniSpeak"></div>
+    <button>KEEP INVESTIGATING</button>
+  </div>`;
+  d.querySelector('.miniSpeak').appendChild(makeSpeaker(found[1]));
+  d.querySelector('button').onclick=()=>d.remove();
+  stage.appendChild(d);
+  showFunConfetti(d)
+}
+
 function correct(){
-  setScore(score+1);toast("CASE CLUE FOUND! 🔎");
-  if(round>=10){setTimeout(solved,500)}
-  else{setRound(round+1);setTimeout(setupCase,450)}
+  setScore(score+1);
+  const newRank=awardAgencyPoint();
+  toast("CASE CLUE FOUND! 🔎");
+  const advance=()=>{
+    if(round>=10){setTimeout(solved,350)}
+    else{setRound(round+1);setTimeout(setupCase,300)}
+  };
+  if(newRank){setTimeout(()=>showRankUp(newRank,advance),350)}
+  else{
+    if(round===3||round===6||round===9){
+      setTimeout(()=>{
+        maybeMiniEvidence();
+        setTimeout(advance,900);
+      },250)
+    }else advance()
+  }
 }
 function solved(){
   clearKeyHandler();
   const d=document.createElement("div");d.className="solve";
-  d.innerHTML=`<div class="solveBox"><img src="agent_girl.png" style="width:140px;height:150px;object-fit:contain" alt=""><h2>CASE SOLVED!</h2><p>Score: ${score}</p><div class="readable" id="solveRead"></div><button class="again">SOLVE AGAIN</button><button class="cases">CASE FILES</button></div>`;
-  d.querySelector('#solveRead').appendChild(makeSpeaker(`Case solved! Your score is ${score}.`));
+  const rank=currentRank();
+  d.innerHTML=`<div class="solveBox"><img src="${rank.img}" style="width:140px;height:150px;object-fit:contain" alt=""><h2>CASE SOLVED!</h2><p>Case Score: ${score}<br>Agency Rank: ${rank.title} • ${rank.points} points</p><div class="readable" id="solveRead"></div><button class="again">SOLVE AGAIN</button><button class="cases">CASE FILES</button></div>`;
+  d.querySelector('#solveRead').appendChild(makeSpeaker(`Case solved! Your case score is ${score}. Your agency rank is ${rank.title} with ${rank.points} agency points.`));
   d.querySelector(".again").onclick=()=>{setRound(1);setupCase()};
   d.querySelector(".cases").onclick=showHome;
   stage.appendChild(d)
@@ -473,6 +766,47 @@ function listenFor(expected,onWrong){
   };
   window.addEventListener("keydown",keyHandler)
 }
+function listenForSequence(expectedList,onWrong){
+  clearKeyHandler();
+  let idx=0;
+  keyHandler=e=>{
+    if(["Shift","Control","Alt","Meta","CapsLock"].includes(e.key))return;
+    if(e.key.length!==1)return;
+    const val=e.key.toUpperCase();
+    e.preventDefault();
+    if(val===String(expectedList[idx]).toUpperCase()){
+      idx++;
+      toast(idx>=expectedList.length ? "CLUE COMPLETE! 🔎" : "GOOD! NEXT CLUE.");
+      if(idx>=expectedList.length)setTimeout(correct,300);
+    }else{
+      toast(onWrong||"CHECK THE CLUE ORDER!");
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
+}
+function listenForNumberString(expected,onWrong){
+  clearKeyHandler();
+  const target=String(expected);
+  let typed="";
+  keyHandler=e=>{
+    if(!/^[0-9]$/.test(e.key))return;
+    e.preventDefault();
+    typed += e.key;
+    if(!target.startsWith(typed)){
+      typed="";
+      toast(onWrong||"CHECK THE NUMBER AGAIN!");
+      return;
+    }
+    if(typed===target){
+      toast("NUMBER FOUND! 🔎");
+      setTimeout(correct,300);
+    }else{
+      toast("KEEP GOING!");
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
+}
+
 function setupCase(){
   resetStage();
   const type=cases[current].type;
@@ -488,40 +822,195 @@ function setupCase(){
   setTimeout(autoFit,0);
 }
 
+
+function showFunConfetti(parent=stage){
+  const pieces=['⭐','🔎','✨','🟡','🔵','🟣'];
+  for(let i=0;i<24;i++){
+    const s=document.createElement('span');s.className='funConfetti';
+    s.textContent=pieces[Math.floor(Math.random()*pieces.length)];
+    s.style.left=(Math.random()*95)+'%';
+    s.style.top=(-40-Math.random()*100)+'px';
+    s.style.animationDelay=(Math.random()*.5)+'s';
+    parent.appendChild(s);
+    setTimeout(()=>s.remove(),2200)
+  }
+}
+
+function startBonusChase(){
+  clearKeyHandler();
+  home.classList.remove('active');
+  game.classList.add('active');
+  gameTitle.textContent='BONUS MISSION: CATCH THE SUSPECT';
+  scoreEl.textContent='—';roundEl.textContent='—';
+  briefing.innerHTML='';
+  resetStage();
+  stage.innerHTML='<div id="toast"></div>';
+  const scene=document.createElement('div');scene.className='chaseScene';
+  scene.innerHTML=`
+    <div class="cityBuilding" style="left:0;width:22%;height:150px"></div>
+    <div class="cityBuilding" style="left:27%;width:18%;height:220px"></div>
+    <div class="cityBuilding" style="left:51%;width:20%;height:175px"></div>
+    <div class="cityBuilding" style="right:0;width:24%;height:240px"></div>
+    <div class="chasePrompt">
+      <div style="font-size:20px">PRESS THE KEY TO MOVE!</div>
+      <div class="targetKey" id="chaseKey">A</div>
+      <div id="chaseSpeak"></div>
+    </div>
+    <div class="chaseTrack">
+      <img class="chaseAgent" src="agent_boy.png" alt="">
+      <img class="chaseSuspect" src="agent_girl.png" alt="">
+    </div>
+    <div class="chaseMeter"><div class="chaseMeterFill"></div></div>`;
+  stage.appendChild(scene);
+
+  let steps=0;
+  let target='';
+  const keyEl=scene.querySelector('#chaseKey');
+  const agent=scene.querySelector('.chaseAgent');
+  const meter=scene.querySelector('.chaseMeterFill');
+  const speakBox=scene.querySelector('#chaseSpeak');
+
+  function nextTarget(){
+    target=Math.random()<.58 ? letter() : String(number0to9());
+    keyEl.textContent=target;
+    speakBox.innerHTML='';
+    speakBox.appendChild(makeSpeaker(`Press ${target} to move closer to the suspect.`));
+  }
+  nextTarget();
+
+  keyHandler=e=>{
+    if(e.key.length!==1)return;
+    const val=e.key.toUpperCase();
+    if(val!==target.toUpperCase()){toast('WRONG CLUE — TRY AGAIN!');return}
+    e.preventDefault();
+    steps++;
+    agent.style.left=Math.min(78,steps*8)+'%';
+    meter.style.width=Math.min(100,steps*10)+'%';
+    toast('GO! GO! GO!');
+    if(steps>=10){
+      clearKeyHandler();
+      const flash=document.createElement('div');flash.className='catchFlash';
+      flash.innerHTML='SUSPECT<br>CAUGHT!';
+      scene.appendChild(flash);
+      showFunConfetti(flash);
+      const pts=getAgencyPoints();
+      setAgencyPoints(pts+3);
+      setTimeout(()=>{
+        flash.innerHTML=`<div><img src="badge_gold.png" style="width:170px;height:170px;object-fit:contain"><br>MISSION COMPLETE!<br><span style="font-family:VAG;font-size:28px">+3 AGENCY POINTS</span><br><button id="chaseAgain" style="margin-top:16px;border:4px solid #17202a;border-radius:14px;padding:10px 18px;background:white">PLAY AGAIN</button></div>`;
+        flash.querySelector('#chaseAgain').onclick=startBonusChase;
+      },900);
+    }else nextTarget()
+  };
+  window.addEventListener('keydown',keyHandler);
+  setTimeout(autoFit,0)
+}
+
+function startBonusVault(){
+  clearKeyHandler();
+  home.classList.remove('active');
+  game.classList.add('active');
+  gameTitle.textContent='BONUS MISSION: CRACK THE VAULT';
+  scoreEl.textContent='—';roundEl.textContent='—';
+  briefing.innerHTML='';
+  resetStage();
+  stage.innerHTML='<div id="toast"></div>';
+  const code=Array.from({length:5},()=>Math.random()<.5?letter():String(number0to9()));
+  let idx=0;
+  const scene=document.createElement('div');scene.className='vaultScene';
+  scene.innerHTML=`
+    <div class="vaultDoor"><div class="vaultWheel"></div></div>
+    <div class="vaultPanel">
+      <img src="fingerprint.png" style="width:120px;height:120px;object-fit:contain" alt="">
+      <div style="font-family:Homebody;font-size:42px">SECRET VAULT CODE</div>
+      <div class="vaultCode">
+        ${code.map((c,i)=>`<div class="codeCell ${i===0?'active':''}">${c}</div>`).join('')}
+      </div>
+      <div>PRESS EACH LETTER OR NUMBER IN ORDER</div>
+      <div id="vaultSpeak" style="margin-top:12px"></div>
+    </div>`;
+  stage.appendChild(scene);
+  scene.querySelector('#vaultSpeak').appendChild(makeSpeaker('Press each letter or number in the secret vault code, from left to right.'));
+  const cells=[...scene.querySelectorAll('.codeCell')];
+
+  keyHandler=e=>{
+    if(e.key.length!==1)return;
+    const v=e.key.toUpperCase();
+    if(v!==String(code[idx]).toUpperCase()){toast('VAULT CODE DOES NOT MATCH!');return}
+    e.preventDefault();
+    cells[idx].classList.remove('active');
+    cells[idx].style.background='#dff7df';
+    idx++;
+    if(idx>=code.length){
+      clearKeyHandler();
+      const rewards=[
+        ['badge2_gold.png','TOP SECRET GOLD BADGE'],
+        ['camera_agent.png','SECRET CAMERA'],
+        ['briefcase.png','AGENT BRIEFCASE'],
+        ['radio.png','SPY RADIO']
+      ];
+      const reward=rewards[Math.floor(Math.random()*rewards.length)];
+      const d=document.createElement('div');d.className='vaultReward';
+      d.innerHTML=`<div class="vaultRewardBox">
+        <img src="${reward[0]}" alt="">
+        <h2>VAULT OPEN!</h2>
+        <div style="font-size:25px">YOU FOUND THE ${reward[1]}!</div>
+        <div id="vaultRewardSpeak" style="margin:12px"></div>
+        <div style="font-size:22px">+2 AGENCY POINTS</div>
+        <button id="vaultAgain" style="margin-top:15px;border:4px solid #17202a;border-radius:14px;padding:10px 18px;background:#ffd84a">CRACK ANOTHER VAULT</button>
+      </div>`;
+      scene.appendChild(d);
+      d.querySelector('#vaultRewardSpeak').appendChild(makeSpeaker(`Vault open! You found the ${reward[1]}.`));
+      setAgencyPoints(getAgencyPoints()+2);
+      showFunConfetti(d);
+      d.querySelector('#vaultAgain').onclick=startBonusVault;
+    }else{
+      cells[idx].classList.add('active');
+      toast('CODE MATCH!')
+    }
+  };
+  window.addEventListener('keydown',keyHandler);
+  setTimeout(autoFit,0)
+}
+
+document.getElementById('bonusChase').onclick=startBonusChase;
+document.getElementById('bonusVault').onclick=startBonusVault;
+
 // CASE 1
 function missingLetter(){
-  const start=Math.floor(Math.random()*21);
-  const seq=[0,1,2,3,4].map(n=>String.fromCharCode(65+start+n));
-  const blank=1+Math.floor(Math.random()*3);
-  const answer=seq[blank];
-  setBriefing('🔤','Which letter is missing? Press it on your keyboard.');
+  const start=Math.floor(Math.random()*20);
+  const seq=[0,1,2,3,4,5,6].map(n=>String.fromCharCode(65+start+n));
+  const blanks=shuffle([1,2,3,4,5]).slice(0,2).sort((a,b)=>a-b);
+  const answers=blanks.map(i=>seq[i]);
+  const text='Two letters are missing. Press the missing letters from left to right.';
+  setBriefing('🔤',text);
   const p=basePanel();
   p.innerHTML=`<div>
-    <div class="smallPrompt">THE ALPHABET EVIDENCE SAYS:</div>
+    <div class="smallPrompt">ALPHABET EVIDENCE</div>
     <div class="sequence" style="margin-top:25px">
-      ${seq.map((x,i)=>`<div class="seqBox ${i===blank?"blank":""}">${i===blank?"?":x}</div>`).join("")}
+      ${seq.map((x,i)=>`<div class="seqBox ${blanks.includes(i)?"blank":""}">${blanks.includes(i)?"?":x}</div>`).join("")}
     </div>
-    <div class="hint" style="margin-top:25px">Press the missing letter.</div>
+    <div class="hint" style="margin-top:25px">Press both missing letters in order.</div>
   </div>`;
-  addPromptSpeaker(p,`The alphabet evidence shows ${seq.map((x,i)=>i===blank?'blank':x).join(', ')}. Press the missing letter.`);
-  listenFor(answer)
+  addPromptSpeaker(p,text);
+  listenForSequence(answers)
 }
 
 // CASE 2
 function capitalMatch(){
-  const L=letter();
-  const shown=L;
-  const text=`This is uppercase ${L}. Press the lowercase ${L} key that matches.`;
+  const letters=shuffle(Array.from({length:26},(_,i)=>String.fromCharCode(65+i))).slice(0,2);
+  const text=`Match both uppercase clues. Press lowercase ${letters[0]}, then lowercase ${letters[1]}.`;
   setBriefing('🅰️',text);
   const p=basePanel();
   p.innerHTML=`<div>
     <div class="smallPrompt">UPPERCASE EVIDENCE</div>
-    <div class="bigPrompt">${shown}</div>
-    <div class="smallPrompt">PRESS THE LOWERCASE ${L}</div>
-    <div class="hint" style="margin-top:15px">Press the matching letter key.</div>
+    <div class="sequence" style="margin-top:22px">
+      <div class="seqBox">${letters[0]}</div>
+      <div class="seqBox">${letters[1]}</div>
+    </div>
+    <div class="smallPrompt" style="margin-top:22px">PRESS THE MATCHING LOWERCASE LETTERS IN ORDER</div>
   </div>`;
   addPromptSpeaker(p,text);
-  listenFor(L)
+  listenForSequence(letters)
 }
 
 // CASE 3
@@ -532,55 +1021,104 @@ const emojiLetters=[
   ["🎻","V"],["🐋","W"],["❌","X"],["🪀","Y"],["🦓","Z"]
 ];
 function firstLetter(){
-  const [emo,L]=random(emojiLetters);
-  setBriefing(emo,'What letter does this clue start with?');
+  const pair=shuffle(emojiLetters).slice(0,2);
+  const answers=pair.map(x=>x[1]);
+  const text='Look at both picture clues. Press the first letter of each picture from left to right.';
+  setBriefing('🕵️‍♀️',text);
   const p=basePanel();
-  p.innerHTML=`<div><div class="bigPrompt">${emo}</div><div class="smallPrompt">Press the first letter.</div></div>`;
-  addPromptSpeaker(p,'Look at the picture clue. Press its first letter.');
-  listenFor(L)
+  p.innerHTML=`<div>
+    <div class="sequence">
+      <div style="display:grid;place-items:center;gap:8px"><div class="bigPrompt">${pair[0][0]}</div><div class="seqBox blank">?</div></div>
+      <div style="display:grid;place-items:center;gap:8px"><div class="bigPrompt">${pair[1][0]}</div><div class="seqBox blank">?</div></div>
+    </div>
+    <div class="smallPrompt" style="margin-top:18px">PRESS BOTH FIRST LETTERS IN ORDER</div>
+  </div>`;
+  addPromptSpeaker(p,text);
+  listenForSequence(answers)
 }
 
 // CASE 4
 function numberHunt(){
-  const n=number0to9();
-  setBriefing('🔢','Press the number shown in the evidence.');
+  const nums=shuffle([0,1,2,3,4,5,6,7,8,9]).slice(0,3).sort((a,b)=>a-b);
+  const modes=[
+    {label:'smallest',answer:nums[0]},
+    {label:'largest',answer:nums[2]},
+    {label:'middle',answer:nums[1]}
+  ];
+  const mode=random(modes);
+  const text=`Look at the three evidence numbers. Press the ${mode.label} number.`;
+  setBriefing('🔢',text);
   const p=basePanel();
-  p.innerHTML=`<div><div class="smallPrompt">EVIDENCE NUMBER</div><div class="bigPrompt">${n}</div><div class="hint">Press ${n} on your keyboard.</div></div>`;
-  addPromptSpeaker(p,`The evidence number is ${n}. Press ${n} on your keyboard.`);
-  listenFor(String(n))
+  p.innerHTML=`<div>
+    <div class="smallPrompt">NUMBER EVIDENCE</div>
+    <div class="sequence" style="margin-top:24px">
+      ${shuffle(nums).map(n=>`<div class="seqBox">${n}</div>`).join("")}
+    </div>
+    <div class="smallPrompt" style="margin-top:22px">PRESS THE ${mode.label.toUpperCase()} NUMBER</div>
+  </div>`;
+  addPromptSpeaker(p,text);
+  listenFor(String(mode.answer))
 }
 
 // CASE 5
 const countEmojis=["⭐","🔎","🗝️","👣","💎","🧩"];
 function countEvidence(){
-  const n=1+Math.floor(Math.random()*9);
+  const n=5+Math.floor(Math.random()*8); // 5-12
   const emo=random(countEmojis);
-  setBriefing('🔎','Count the evidence. Press the number.');
+  const text='Count all the evidence pictures. Type the number you counted.';
+  setBriefing('🔎',text);
   const p=basePanel();
   p.innerHTML=`<div>
     <div class="countArea">${Array(n).fill(`<span>${emo}</span>`).join("")}</div>
-    <div class="smallPrompt" style="margin-top:22px">HOW MANY?</div>
+    <div class="smallPrompt" style="margin-top:22px">HOW MANY PIECES OF EVIDENCE?</div>
+    <div class="hint">Some answers have two digits.</div>
   </div>`;
-  addPromptSpeaker(p,'Count all the evidence pictures. Press the number you counted.');
-  listenFor(String(n))
+  addPromptSpeaker(p,text);
+  listenForNumberString(n)
 }
 
 // CASE 6
 function missingNumber(){
-  const start=Math.floor(Math.random()*5);
-  const seq=[start,start+1,start+2,start+3,start+4];
-  const blank=1+Math.floor(Math.random()*3);
-  const answer=seq[blank];
-  setBriefing('🧩','Which number is missing? Press it.');
+  const start=Math.floor(Math.random()*13); // 0-12, sequence ends <=18
+  const seq=[start,start+1,start+2,start+3,start+4,start+5,start+6];
+  const blanks=shuffle([1,2,3,4,5]).slice(0,2).sort((a,b)=>a-b);
+  const answers=blanks.map(i=>String(seq[i]));
+  const text='Two numbers are missing. Type the missing numbers from left to right.';
+  setBriefing('🧩',text);
   const p=basePanel();
   p.innerHTML=`<div>
     <div class="smallPrompt">NUMBER TRAIL</div>
     <div class="sequence" style="margin-top:25px">
-      ${seq.map((x,i)=>`<div class="seqBox ${i===blank?"blank":""}">${i===blank?"?":x}</div>`).join("")}
+      ${seq.map((x,i)=>`<div class="seqBox ${blanks.includes(i)?"blank":""}">${blanks.includes(i)?"?":x}</div>`).join("")}
     </div>
+    <div class="hint" style="margin-top:20px">Some missing numbers may have two digits.</div>
   </div>`;
-  addPromptSpeaker(p,`The number trail has a missing number. Press the missing number.`);
-  listenFor(String(answer))
+  addPromptSpeaker(p,text);
+
+  clearKeyHandler();
+  let answerIndex=0, typed="";
+  keyHandler=e=>{
+    if(!/^[0-9]$/.test(e.key))return;
+    e.preventDefault();
+    const target=answers[answerIndex];
+    typed += e.key;
+    if(!target.startsWith(typed)){
+      typed="";
+      toast("CHECK THE NUMBER TRAIL!");
+      return;
+    }
+    if(typed===target){
+      answerIndex++;
+      typed="";
+      if(answerIndex>=answers.length){
+        toast("NUMBER TRAIL SOLVED!");
+        setTimeout(correct,300);
+      }else{
+        toast("GOOD! FIND THE NEXT NUMBER.");
+      }
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
 }
 
 
@@ -609,9 +1147,9 @@ function showCodeReward(nextAction){
 
 // CASE 7
 function letterCode(){
-  const code=Array.from({length:3},()=>letter());
+  const code=Array.from({length:4},()=>letter());
   let idx=0;
-  setBriefing('🔐','Crack the letter code. Press the letters in order.');
+  setBriefing('🔐','Crack the four-letter code. Press the letters in order.');
   const p=basePanel();
   function paint(){
     p.innerHTML=`<div>
@@ -623,7 +1161,7 @@ function letterCode(){
     </div>`
   }
   paint();
-  addPromptSpeaker(p,'Press the secret letter code in order from left to right.');
+  addPromptSpeaker(p,'Press all four secret letters in order from left to right.');
   clearKeyHandler();
   keyHandler=e=>{
     if(e.key.length!==1)return;
@@ -640,9 +1178,9 @@ function letterCode(){
 
 // CASE 8
 function numberCode(){
-  const code=Array.from({length:4},()=>number0to9());
+  const code=Array.from({length:5},()=>number0to9());
   let idx=0;
-  setBriefing('💻','Crack the number code. Press the numbers in order.');
+  setBriefing('💻','Crack the five-number code. Press the numbers in order.');
   const p=basePanel();
   function paint(){
     p.innerHTML=`<div>
@@ -654,7 +1192,7 @@ function numberCode(){
     </div>`
   }
   paint();
-  addPromptSpeaker(p,'Press the secret number code in order from left to right.');
+  addPromptSpeaker(p,'Press all five secret numbers in order from left to right.');
   clearKeyHandler();
   keyHandler=e=>{
     if(!/^[0-9]$/.test(e.key))return;
