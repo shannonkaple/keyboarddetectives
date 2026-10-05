@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ms. Kaple's Keyboard Detective Agency</title>
+<style>
+:root{
+  --ink:#17202a;
+  --paper:#fffdf7;
+  --yellow:#ffd84a;
+  --blue:#65c7ff;
+  --green:#78d978;
+  --pink:#ff86b7;
+  --purple:#b78cff;
+  --orange:#ffad5a;
+  --red:#ff7777;
+  --teal:#62d7ce;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:#eaf4fb;color:var(--ink);user-select:none}
+body{overflow-x:hidden}
+button{font:inherit}
+#app{min-height:100vh;background:
+  linear-gradient(rgba(255,255,255,.82),rgba(255,255,255,.82)),
+  repeating-linear-gradient(45deg,#dbe8f0 0 18px,#edf5fa 18px 36px);
+}
+header{
+  background:#152231;color:white;padding:12px 18px;border-bottom:6px solid #0b1118;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .emoji{font-size:42px}
+.brand h1{margin:0;font-size:clamp(26px,3.4vw,48px);letter-spacing:.5px}
+.brand small{display:block;font-size:14px;opacity:.88;letter-spacing:1px}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+nav button{
+  border:3px solid white;border-radius:12px;background:#24384d;color:white;
+  padding:8px 12px;cursor:pointer;font-weight:800
+}
+main{padding:14px}
+.view{display:none}.view.active{display:block}
+
+.case-note{
+  max-width:1380px;margin:0 auto 14px;background:#fff8c9;border:4px dashed #3f3a22;
+  border-radius:18px;padding:10px 16px;text-align:center;font-weight:800;
+  font-size:clamp(17px,1.8vw,24px)
+}
+.case-grid{
+  max-width:1380px;margin:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px
+}
+.case-card{
+  border:5px solid #17202a;border-radius:20px;background:white;overflow:hidden;cursor:pointer;
+  box-shadow:0 5px 0 #17202a;min-height:260px;display:grid;grid-template-rows:auto 1fr auto
+}
+.case-card:hover{transform:translateY(-2px)}
+.case-card:active{transform:translateY(3px);box-shadow:0 2px 0 #17202a}
+.case-head{
+  padding:9px 10px;display:flex;align-items:center;gap:9px;border-bottom:4px solid #17202a;
+  font-weight:900;font-size:clamp(18px,1.7vw,27px)
+}
+.case-num{
+  width:38px;height:38px;border:3px solid #17202a;border-radius:50%;background:white;
+  display:grid;place-items:center;flex:0 0 38px
+}
+.case-art{
+  display:grid;place-items:center;min-height:150px;background:linear-gradient(#f7fbff,#eef7fb);
+  font-size:74px;position:relative;overflow:hidden
+}
+.case-art .mini{font-size:30px;position:absolute}
+.case-desc{padding:9px 10px;text-align:center;font-weight:800;font-size:15px;background:white}
+
+.c1 .case-head{background:var(--yellow)}
+.c2 .case-head{background:var(--blue)}
+.c3 .case-head{background:var(--green)}
+.c4 .case-head{background:var(--pink)}
+.c5 .case-head{background:var(--purple)}
+.c6 .case-head{background:var(--orange)}
+.c7 .case-head{background:var(--teal)}
+.c8 .case-head{background:var(--red)}
+
+#gameWrap{max-width:1400px;margin:auto}
+#gameTop{
+  display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-bottom:9px
+}
+#gameTitle{font-size:clamp(25px,3vw,42px);font-weight:900}
+.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.badge{border:4px solid #17202a;border-radius:999px;background:white;padding:7px 12px;font-weight:900}
+
+#briefing{
+  border:4px solid #17202a;border-radius:18px;background:#fff8c9;padding:10px 14px;margin-bottom:10px;
+  text-align:center;font-size:clamp(19px,2vw,29px);font-weight:900;min-height:66px;
+  display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap
+}
+#briefing .clueEmoji{font-size:44px}
+#stage{
+  height:620px;border:5px solid #17202a;border-radius:22px;background:#f9fcff;position:relative;overflow:hidden;
+  box-shadow:inset 0 0 0 8px rgba(255,255,255,.55)
+}
+.detective-bg{
+  position:absolute;inset:0;background:
+    linear-gradient(rgba(235,246,255,.92),rgba(255,255,255,.94)),
+    repeating-linear-gradient(0deg,transparent 0 44px,rgba(62,118,160,.08) 44px 46px)
+}
+.tape{
+  position:absolute;left:-60px;right:-60px;height:48px;background:#ffd92f;border-top:4px solid #17202a;border-bottom:4px solid #17202a;
+  font-weight:900;display:flex;align-items:center;justify-content:center;letter-spacing:3px;transform:rotate(-3deg);opacity:.9
+}
+.tape.top{top:34px}.tape.bottom{bottom:36px;transform:rotate(2deg)}
+.panel{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(980px,84%);min-height:360px;border:5px solid #17202a;border-radius:24px;background:white;
+  padding:24px;display:grid;place-items:center;text-align:center;box-shadow:0 8px 0 rgba(23,32,42,.25)
+}
+.bigPrompt{font-size:clamp(70px,11vw,160px);font-weight:900;line-height:1}
+.mediumPrompt{font-size:clamp(42px,6vw,86px);font-weight:900;line-height:1.1}
+.smallPrompt{font-size:clamp(24px,3vw,42px);font-weight:900}
+.keyRow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.key{
+  min-width:100px;min-height:88px;border:5px solid #17202a;border-radius:17px;background:#fff;
+  display:grid;place-items:center;font-size:48px;font-weight:900;box-shadow:0 6px 0 #c7d3dc
+}
+.hint{font-size:18px;font-weight:800;opacity:.7}
+.sequence{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.seqBox{
+  width:88px;height:88px;border:5px solid #17202a;border-radius:17px;background:#fff;
+  display:grid;place-items:center;font-size:46px;font-weight:900
+}
+.seqBox.blank{background:#fff8c9;color:#777;border-style:dashed}
+.countArea{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;font-size:58px;max-width:820px}
+.choiceRow{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.choice{
+  border:5px solid #17202a;border-radius:18px;background:white;padding:12px 18px;min-width:120px;
+  font-size:40px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #17202a
+}
+.choice:active{transform:translateY(3px);box-shadow:0 2px 0 #17202a}
+.progressBar{
+  position:absolute;left:28px;right:28px;bottom:22px;height:26px;border:4px solid #17202a;border-radius:999px;background:white;overflow:hidden
+}
+.progressFill{height:100%;background:#69d269;width:0%;transition:.25s}
+#toast{
+  position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:50;
+  border:4px solid #17202a;border-radius:14px;background:white;padding:8px 14px;font-size:22px;font-weight:900;
+  opacity:0;transition:.15s
+}
+#toast.show{opacity:1}
+.solve{
+  position:absolute;inset:0;z-index:80;background:rgba(255,255,255,.96);display:grid;place-items:center;text-align:center
+}
+.solveBox{
+  border:6px solid #17202a;border-radius:26px;background:white;padding:28px 40px;box-shadow:0 8px 0 #17202a
+}
+.solveBox .emoji{font-size:80px}.solveBox h2{font-size:clamp(44px,7vw,90px);margin:4px 0}.solveBox p{font-size:24px;font-weight:800}
+.solveBox button{border:4px solid #17202a;border-radius:14px;padding:10px 18px;background:#ffd84a;font-weight:900;cursor:pointer;margin:4px}
+
+#keyboardHelp{
+  max-width:1380px;margin:14px auto 0;border:4px solid #17202a;border-radius:16px;background:white;padding:9px 12px;
+  text-align:center;font-weight:800;font-size:15px
+}
+
+@media(max-width:1000px){
+  .case-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #stage{height:680px}
+}
+@media(max-width:560px){
+  .case-grid{grid-template-columns:1fr}
+}
+
+/* Auto-fit on school computers: JS sets browser zoom based on viewport. */
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <div class="brand">
+    <div class="emoji">🕵️‍♀️</div>
+    <div>
+      <h1>MS. KAPLE'S KEYBOARD DETECTIVE AGENCY</h1>
+      <small>8 CASE FILES • LETTERS + NUMBERS ONLY</small>
+    </div>
+  </div>
+  <nav>
+    <button id="homeBtn">🗂️ CASES</button>
+    <button id="restartBtn">🔄 RESTART CASE</button>
+    <button id="prevBtn">◀ PREV</button>
+    <button id="nextBtn">NEXT ▶</button>
+  </nav>
+</header>
+
+<main>
+  <section id="home" class="view active">
+    <div class="case-note">🔎 DETECTIVES: CHOOSE A CASE FILE AND USE YOUR KEYBOARD TO SOLVE IT!</div>
+    <div id="caseGrid" class="case-grid"></div>
+    
+  </section>
+
+  <section id="game" class="view">
+    <div id="gameWrap">
+      <div id="gameTop">
+        <div id="gameTitle"></div>
+        <div class="badges">
+          <div class="badge">⭐ SCORE: <span id="score">0</span></div>
+          <div class="badge">🔍 CLUE: <span id="round">1</span>/10</div>
+        </div>
+      </div>
+      <div id="briefing"></div>
+      <div id="stage">
+        <div id="toast"></div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<script>
+const cases = [
+  {
+    title:"CASE 1: THE MISSING LETTER",
+    desc:"Find the letter that disappeared.",
+    icon:"🔤", cls:"c1", type:"missingLetter"
+  },
+  {
+    title:"CASE 2: CAPITAL CLUE",
+    desc:"Match the uppercase and lowercase letter.",
+    icon:"🅰️", cls:"c2", type:"capitalMatch"
+  },
+  {
+    title:"CASE 3: FIRST-LETTER FILE",
+    desc:"Use the emoji clue to find its first letter.",
+    icon:"🍎", cls:"c3", type:"firstLetter"
+  },
+  {
+    title:"CASE 4: NUMBER HUNT",
+    desc:"Press the number shown in the evidence.",
+    icon:"🔢", cls:"c4", type:"numberHunt"
+  },
+  {
+    title:"CASE 5: COUNT THE EVIDENCE",
+    desc:"Count the clues and press the number.",
+    icon:"🔎", cls:"c5", type:"countEvidence"
+  },
+  {
+    title:"CASE 6: BEFORE & AFTER",
+    desc:"Find the missing number in the sequence.",
+    icon:"🧩", cls:"c6", type:"missingNumber"
+  },
+  {
+    title:"CASE 7: LETTER CODE BREAKER",
+    desc:"Press the letters in the secret code.",
+    icon:"🔐", cls:"c7", type:"letterCode"
+  },
+  {
+    title:"CASE 8: NUMBER CODE BREAKER",
+    desc:"Press the numbers in the secret code.",
+    icon:"💻", cls:"c8", type:"numberCode"
+  }
+];
+
+const caseGrid = document.getElementById("caseGrid");
+const home = document.getElementById("home");
+const game = document.getElementById("game");
+const stage = document.getElementById("stage");
+const gameTitle = document.getElementById("gameTitle");
+const briefing = document.getElementById("briefing");
+const scoreEl = document.getElementById("score");
+const roundEl = document.getElementById("round");
+
+let current = 0;
+let score = 0;
+let round = 1;
+let state = {};
+let keyHandler = null;
+let fitRaf = null;
+
+function autoFit(){
+  cancelAnimationFrame(fitRaf);
+  fitRaf = requestAnimationFrame(()=>{
+    document.body.style.zoom = "1";
+    const vw = (window.visualViewport && window.visualViewport.width) || innerWidth || 1366;
+    const vh = (window.visualViewport && window.visualViewport.height) || innerHeight || 768;
+    const onHome = home.classList.contains("active");
+    const designW = 1480;
+    const designH = onHome ? 900 : 900;
+    let s = Math.min((vw-14)/designW,(vh-14)/designH,1);
+    s = Math.max(.52,Math.min(1,s));
+    document.body.style.zoom = s.toFixed(3);
+  });
+}
+window.addEventListener("load",autoFit);
+window.addEventListener("resize",autoFit);
+if(window.visualViewport) window.visualViewport.addEventListener("resize",autoFit);
+
+function savedKey(type){return "msKapleDetective_"+type+"_score"}
+function getSaved(type){return Number(localStorage.getItem(savedKey(type))||0)}
+function setScore(v){
+  score=v;scoreEl.textContent=v;
+  localStorage.setItem(savedKey(cases[current].type),String(v));
+}
+function setRound(v){round=v;roundEl.textContent=v}
+function clearKeyHandler(){
+  if(keyHandler){window.removeEventListener("keydown",keyHandler);keyHandler=null}
+}
+function resetStage(){
+  clearKeyHandler();
+  stage.innerHTML='<div id="toast"></div><div class="detective-bg"></div><div class="tape top">EVIDENCE • EVIDENCE • EVIDENCE • EVIDENCE</div><div class="tape bottom">CASE FILE • CASE FILE • CASE FILE • CASE FILE</div>';
+  state={};
+}
+function toast(msg){
+  const t=document.getElementById("toast");
+  if(!t)return;
+  t.textContent=msg;t.classList.add("show");
+  clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove("show"),650)
+}
+function random(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function letter(){return String.fromCharCode(65+Math.floor(Math.random()*26))}
+function number0to9(){return Math.floor(Math.random()*10)}
+
+cases.forEach((c,i)=>{
+  const card=document.createElement("button");
+  card.className=`case-card ${c.cls}`;
+  const minis = [["🔎","🗝️"],["A","a"],["🍎","🐱"],["3","7"],["⭐","⭐"],["4","5"],["ABC","🔐"],["123","💻"]][i];
+  card.innerHTML=`
+    <div class="case-head"><span class="case-num">${i+1}</span><span>${c.title}</span></div>
+    <div class="case-art">
+      <span>${c.icon}</span>
+      <span class="mini" style="left:15%;top:18%">${minis[0]}</span>
+      <span class="mini" style="right:15%;bottom:18%">${minis[1]}</span>
+    </div>
+    <div class="case-desc">${c.desc}</div>`;
+  card.onclick=()=>startCase(i);
+  caseGrid.appendChild(card);
+});
+
+function showHome(){
+  clearKeyHandler();
+  game.classList.remove("active");
+  home.classList.add("active");
+  setTimeout(autoFit,0);
+}
+function startCase(i){
+  current=(i+cases.length)%cases.length;
+  home.classList.remove("active");
+  game.classList.add("active");
+  gameTitle.textContent=cases[current].title;
+  score=getSaved(cases[current].type);
+  scoreEl.textContent=score;
+  setRound(1);
+  setupCase();
+  setTimeout(autoFit,0);
+}
+function restartCase(){
+  localStorage.setItem(savedKey(cases[current].type),"0");
+  score=0;scoreEl.textContent=0;setRound(1);setupCase();
+}
+document.getElementById("homeBtn").onclick=showHome;
+document.getElementById("restartBtn").onclick=restartCase;
+document.getElementById("prevBtn").onclick=()=>startCase(current-1);
+document.getElementById("nextBtn").onclick=()=>startCase(current+1);
+
+function basePanel(){
+  const p=document.createElement("div");p.className="panel";stage.appendChild(p);return p;
+}
+function progress(){
+  const bar=document.createElement("div");bar.className="progressBar";
+  bar.innerHTML=`<div class="progressFill" style="width:${((round-1)/10)*100}%"></div>`;
+  stage.appendChild(bar)
+}
+function correct(){
+  setScore(score+1);toast("CASE CLUE FOUND! 🔎");
+  if(round>=10){setTimeout(solved,500)}
+  else{setRound(round+1);setTimeout(setupCase,450)}
+}
+function solved(){
+  clearKeyHandler();
+  const d=document.createElement("div");d.className="solve";
+  d.innerHTML=`<div class="solveBox"><div class="emoji">🕵️‍♀️🏆</div><h2>CASE SOLVED!</h2><p>Score: ${score}</p><button class="again">SOLVE AGAIN</button><button class="cases">CASE FILES</button></div>`;
+  d.querySelector(".again").onclick=()=>{setRound(1);setupCase()};
+  d.querySelector(".cases").onclick=showHome;
+  stage.appendChild(d)
+}
+function listenFor(expected,onWrong){
+  clearKeyHandler();
+  keyHandler=e=>{
+    if(["Shift","Control","Alt","Meta","CapsLock"].includes(e.key))return;
+    const val=e.key.length===1?e.key.toUpperCase():e.key;
+    if(val===String(expected).toUpperCase()){e.preventDefault();correct()}
+    else{
+      if(e.key.length===1){e.preventDefault();toast(onWrong||"CHECK THE EVIDENCE AGAIN!")}
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
+}
+function setupCase(){
+  resetStage();
+  const type=cases[current].type;
+  if(type==="missingLetter") missingLetter();
+  if(type==="capitalMatch") capitalMatch();
+  if(type==="firstLetter") firstLetter();
+  if(type==="numberHunt") numberHunt();
+  if(type==="countEvidence") countEvidence();
+  if(type==="missingNumber") missingNumber();
+  if(type==="letterCode") letterCode();
+  if(type==="numberCode") numberCode();
+  progress();
+  setTimeout(autoFit,0);
+}
+
+// CASE 1
+function missingLetter(){
+  const start=Math.floor(Math.random()*21);
+  const seq=[0,1,2,3,4].map(n=>String.fromCharCode(65+start+n));
+  const blank=1+Math.floor(Math.random()*3);
+  const answer=seq[blank];
+  briefing.innerHTML=`<span class="clueEmoji">🔤</span><span>Which letter is missing? Press it on your keyboard.</span>`;
+  const p=basePanel();
+  p.innerHTML=`<div>
+    <div class="smallPrompt">THE ALPHABET EVIDENCE SAYS:</div>
+    <div class="sequence" style="margin-top:25px">
+      ${seq.map((x,i)=>`<div class="seqBox ${i===blank?"blank":""}">${i===blank?"?":x}</div>`).join("")}
+    </div>
+    <div class="hint" style="margin-top:25px">Press the missing letter.</div>
+  </div>`;
+  listenFor(answer)
+}
+
+// CASE 2
+function capitalMatch(){
+  const L=letter();
+  const showUpper=Math.random()>.5;
+  const shown=showUpper?L:L.toLowerCase();
+  briefing.innerHTML=`<span class="clueEmoji">🅰️</span><span>Find the matching ${showUpper?"lowercase":"uppercase"} letter.</span>`;
+  const p=basePanel();
+  p.innerHTML=`<div>
+    <div class="smallPrompt">EVIDENCE LETTER</div>
+    <div class="bigPrompt">${shown}</div>
+    <div class="smallPrompt">Press ${showUpper?"lowercase":"uppercase"} ${L}.</div>
+    <div class="hint" style="margin-top:15px">The same keyboard key works. Just press the letter.</div>
+  </div>`;
+  // Since keydown doesn't preserve intended case without Shift in a meaningful way for first grade,
+  // assess recognizing the matching letter key, not Shift yet.
+  listenFor(L)
+}
+
+// CASE 3
+const emojiLetters=[
+  ["🍎","A"],["🐝","B"],["🐱","C"],["🐶","D"],["🥚","E"],["🐸","F"],["🍇","G"],
+  ["🎩","H"],["🍦","I"],["🧃","J"],["🔑","K"],["🦁","L"],["🌙","M"],["👃","N"],
+  ["🐙","O"],["🐷","P"],["👑","Q"],["🤖","R"],["☀️","S"],["🌳","T"],["☂️","U"],
+  ["🎻","V"],["🐋","W"],["❌","X"],["🪀","Y"],["🦓","Z"]
+];
+function firstLetter(){
+  const [emo,L]=random(emojiLetters);
+  briefing.innerHTML=`<span class="clueEmoji">${emo}</span><span>What letter does this clue start with?</span>`;
+  const p=basePanel();
+  p.innerHTML=`<div><div class="bigPrompt">${emo}</div><div class="smallPrompt">Press the first letter.</div></div>`;
+  listenFor(L)
+}
+
+// CASE 4
+function numberHunt(){
+  const n=number0to9();
+  briefing.innerHTML=`<span class="clueEmoji">🔢</span><span>Press the number shown in the evidence.</span>`;
+  const p=basePanel();
+  p.innerHTML=`<div><div class="smallPrompt">EVIDENCE NUMBER</div><div class="bigPrompt">${n}</div><div class="hint">Press ${n} on your keyboard.</div></div>`;
+  listenFor(String(n))
+}
+
+// CASE 5
+const countEmojis=["⭐","🔎","🗝️","👣","💎","🧩"];
+function countEvidence(){
+  const n=1+Math.floor(Math.random()*9);
+  const emo=random(countEmojis);
+  briefing.innerHTML=`<span class="clueEmoji">🔎</span><span>Count the evidence. Press the number.</span>`;
+  const p=basePanel();
+  p.innerHTML=`<div>
+    <div class="countArea">${Array(n).fill(`<span>${emo}</span>`).join("")}</div>
+    <div class="smallPrompt" style="margin-top:22px">HOW MANY?</div>
+  </div>`;
+  listenFor(String(n))
+}
+
+// CASE 6
+function missingNumber(){
+  const start=Math.floor(Math.random()*5);
+  const seq=[start,start+1,start+2,start+3,start+4];
+  const blank=1+Math.floor(Math.random()*3);
+  const answer=seq[blank];
+  briefing.innerHTML=`<span class="clueEmoji">🧩</span><span>Which number is missing? Press it.</span>`;
+  const p=basePanel();
+  p.innerHTML=`<div>
+    <div class="smallPrompt">NUMBER TRAIL</div>
+    <div class="sequence" style="margin-top:25px">
+      ${seq.map((x,i)=>`<div class="seqBox ${i===blank?"blank":""}">${i===blank?"?":x}</div>`).join("")}
+    </div>
+  </div>`;
+  listenFor(String(answer))
+}
+
+// CASE 7
+function letterCode(){
+  const code=Array.from({length:3},()=>letter());
+  let idx=0;
+  briefing.innerHTML=`<span class="clueEmoji">🔐</span><span>Crack the letter code. Press the letters in order.</span>`;
+  const p=basePanel();
+  function paint(){
+    p.innerHTML=`<div>
+      <div class="smallPrompt">SECRET LETTER CODE</div>
+      <div class="sequence" style="margin-top:25px">
+        ${code.map((x,i)=>`<div class="seqBox" style="${i<idx?"background:#dff7df":i===idx?"background:#fff8c9":""}">${x}</div>`).join("")}
+      </div>
+      <div class="hint" style="margin-top:25px">Press the highlighted clue next.</div>
+    </div>`
+  }
+  paint();
+  clearKeyHandler();
+  keyHandler=e=>{
+    if(e.key.length!==1)return;
+    const v=e.key.toUpperCase();
+    e.preventDefault();
+    if(v===code[idx]){
+      idx++;toast("GOOD CLUE!");
+      if(idx>=code.length){setTimeout(correct,250)}
+      else paint()
+    }else toast("THAT LETTER DOESN'T MATCH!")
+  };
+  window.addEventListener("keydown",keyHandler)
+}
+
+// CASE 8
+function numberCode(){
+  const code=Array.from({length:4},()=>number0to9());
+  let idx=0;
+  briefing.innerHTML=`<span class="clueEmoji">💻</span><span>Crack the number code. Press the numbers in order.</span>`;
+  const p=basePanel();
+  function paint(){
+    p.innerHTML=`<div>
+      <div class="smallPrompt">SECRET NUMBER CODE</div>
+      <div class="sequence" style="margin-top:25px">
+        ${code.map((x,i)=>`<div class="seqBox" style="${i<idx?"background:#dff7df":i===idx?"background:#fff8c9":""}">${x}</div>`).join("")}
+      </div>
+      <div class="hint" style="margin-top:25px">Press the highlighted number next.</div>
+    </div>`
+  }
+  paint();
+  clearKeyHandler();
+  keyHandler=e=>{
+    if(!/^[0-9]$/.test(e.key))return;
+    e.preventDefault();
+    if(Number(e.key)===code[idx]){
+      idx++;toast("CODE CLUE FOUND!");
+      if(idx>=code.length){setTimeout(correct,250)}
+      else paint()
+    }else toast("WRONG NUMBER — TRY AGAIN!")
+  };
+  window.addEventListener("keydown",keyHandler)
+}
+</script>
+</body>
+</html>
