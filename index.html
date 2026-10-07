@@ -359,6 +359,73 @@ main{padding:14px}
   .vaultDoor{display:none}
 }
 
+
+/* V7 simplified points + locked/moving bonus games */
+.unlockNote{max-width:1380px;margin:0 auto 10px;text-align:center;font-size:17px;font-weight:900}
+.bonusCard{position:relative}
+.bonusCardRead{position:absolute;right:8px;bottom:8px;z-index:12}
+.lockOverlay{
+  position:absolute;inset:0;z-index:10;background:rgba(23,32,42,.86);color:#fff;
+  display:grid;place-items:center;text-align:center;padding:14px
+}
+.lockOverlay .lockIcon{font-size:48px}
+.lockOverlay strong{display:block;font-size:19px;margin:4px}
+.lockOverlay .miniSpeak{margin-top:8px;color:#17202a}
+.completeStamp{
+  position:absolute;right:8px;bottom:44px;z-index:5;border:4px solid #166b33;border-radius:999px;
+  background:#dcf6e4;padding:5px 9px;font-size:14px;font-weight:900;transform:rotate(-4deg)
+}
+.rankHome .miniSpeak{justify-self:end}
+.rankChip .miniSpeak{padding:3px;width:34px;height:34px}
+.rankChip .miniSpeak span{display:none}
+.movingEvidenceArea{
+  position:relative;width:820px;max-width:92%;height:255px;border:4px dashed #9cb2bf;
+  border-radius:22px;background:#f7fbfe;margin:auto
+}
+.movingEvidence{
+  position:absolute;width:52px;height:52px;object-fit:contain;
+  animation:bobEvidence 2.3s ease-in-out infinite alternate;
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.18))
+}
+@keyframes bobEvidence{from{transform:translateY(-8px) rotate(-3deg)}to{transform:translateY(8px) rotate(3deg)}}
+.runnerTrack{
+  width:min(850px,92%);height:130px;border-bottom:7px solid #263743;position:relative;margin:8px auto 5px;
+  background:linear-gradient(transparent 65%,#d8eef8 65% 68%,transparent 68%)
+}
+.runnerAgent{position:absolute;left:0;bottom:3px;width:90px;height:118px;object-fit:contain;transition:left .35s ease}
+.runnerAgent.jump{animation:littleJump .35s ease}
+@keyframes littleJump{0%{transform:translateY(0)}45%{transform:translateY(-32px)}100%{transform:translateY(0)}}
+.checkpoint{position:absolute;bottom:0;width:5px;height:42px;background:#80909b;opacity:.55}
+.rushScene,.laserScene{
+  position:absolute;inset:0;background:linear-gradient(#b5e7ff 0 62%,#31475a 62% 100%);overflow:hidden
+}
+.missionPrompt{
+  position:absolute;left:50%;top:22px;transform:translateX(-50%);z-index:5;border:5px solid #17202a;
+  border-radius:19px;background:#fff;padding:8px 17px;min-width:335px;text-align:center;box-shadow:0 5px 0 #17202a
+}
+.rushLane{
+  position:absolute;left:4%;right:4%;top:180px;height:270px;border-top:5px dashed rgba(255,255,255,.55);
+  border-bottom:5px dashed rgba(255,255,255,.55)
+}
+.rushCard{
+  position:absolute;left:-150px;top:75px;width:130px;height:115px;border:6px solid #17202a;border-radius:20px;
+  background:#fff;display:grid;place-items:center;font-family:Homebody,VAG,sans-serif;font-size:72px;box-shadow:0 6px 0 #17202a
+}
+.rushCard.fly{animation:flyRush 4.8s linear forwards}
+@keyframes flyRush{from{left:-150px}to{left:calc(100% + 20px)}}
+.laserFloor{position:absolute;left:6%;right:6%;bottom:90px;height:250px;border-bottom:8px solid #22323e}
+.laserAgent{position:absolute;left:0;bottom:0;width:125px;height:175px;object-fit:contain;transition:left .35s}
+.laserBeam{
+  position:absolute;top:0;bottom:0;width:13px;background:#ff3333;box-shadow:0 0 18px #ff2e2e;
+  animation:sweepLaser 1.7s ease-in-out infinite alternate
+}
+@keyframes sweepLaser{from{left:14%}to{left:84%}}
+.laserBeam.off{opacity:.08;animation:none}
+.missionDone{
+  position:absolute;inset:0;z-index:75;background:rgba(255,240,94,.9);display:grid;place-items:center;text-align:center;
+  font-family:Homebody,VAG,sans-serif;font-size:clamp(50px,8vw,105px)
+}
+
 </style>
 </head>
 <body>
@@ -384,29 +451,52 @@ main{padding:14px}
     <div class="case-note">🔎 DETECTIVES: CHOOSE A CASE FILE AND USE YOUR KEYBOARD TO SOLVE IT!</div>
     <div id="agencyRankHome" class="rankHome"></div>
     <div id="caseGrid" class="case-grid"></div>
-    <div class="bonusHeader">BONUS MISSIONS</div>
+    <div class="bonusHeader">BONUS MISSIONS <span id="bonusHeaderRead"></span></div>
+    <div id="bonusUnlockNote" class="unlockNote"></div>
     <div class="bonusGrid">
-      <button class="bonusCard chaseBonus" id="bonusChase">
+      <div class="bonusCard chaseBonus" id="bonusChase" role="button" tabindex="0">
         <div class="bonusTitle">MISSION: CATCH THE SUSPECT</div>
         <div class="bonusVisual">
           <img src="agent_boy.png" alt="">
           <div class="chaseArrow">➡</div>
           <img src="agent_girl.png" alt="" style="transform:scaleX(-1)">
         </div>
-        <div class="bonusDesc">Press the right letters and numbers to catch the suspect!</div>
-      </button>
-      <button class="bonusCard vaultBonus" id="bonusVault">
+        <div class="bonusDesc">Press letters and numbers to chase the suspect across the screen.</div>
+        <div class="bonusCardRead"></div>
+      </div>
+      <div class="bonusCard rushBonus" id="bonusRush" role="button" tabindex="0">
+        <div class="bonusTitle">MISSION: EVIDENCE RUSH</div>
+        <div class="bonusVisual">
+          <img src="magnifier.png" alt="">
+          <div class="vaultDigits">A 7</div>
+          <img src="camera_agent.png" alt="">
+        </div>
+        <div class="bonusDesc">A letter or number races across the screen. Press it before it escapes.</div>
+        <div class="bonusCardRead"></div>
+      </div>
+      <div class="bonusCard laserBonus" id="bonusLaser" role="button" tabindex="0">
+        <div class="bonusTitle">MISSION: LASER ESCAPE</div>
+        <div class="bonusVisual">
+          <img src="agent_girl.png" alt="">
+          <div class="vaultDigits">⚡</div>
+          <img src="fingerprint.png" alt="">
+        </div>
+        <div class="bonusDesc">Press the correct keys to shut down moving lasers and move the agent to safety.</div>
+        <div class="bonusCardRead"></div>
+      </div>
+      <div class="bonusCard vaultBonus" id="bonusVault" role="button" tabindex="0">
         <div class="bonusTitle">MISSION: CRACK THE VAULT</div>
         <div class="bonusVisual">
           <img src="briefcase.png" alt="">
           <div class="vaultDigits">1 2 3 ?</div>
           <img src="badge_gold.png" alt="">
         </div>
-        <div class="bonusDesc">Solve secret keyboard codes to unlock surprise rewards!</div>
-      </button>
+        <div class="bonusDesc">Solve a mixed letter and number code to unlock a surprise reward.</div>
+        <div class="bonusCardRead"></div>
+      </div>
     </div>
 
-    
+
   </section>
 
   <section id="game" class="view">
@@ -414,8 +504,7 @@ main{padding:14px}
       <div id="gameTop">
         <div id="gameTitle"></div>
         <div class="badges">
-          <div class="badge">⭐ CASE SCORE: <span id="score">0</span></div>
-          <div class="badge">🔍 CLUE: <span id="round">1</span>/10</div>
+          <div style="display:none"><span id="score">0</span><span id="round">1</span></div>
           <div id="rankChip" class="rankChip"></div>
         </div>
       </div>
@@ -430,47 +519,18 @@ main{padding:14px}
 
 <script>
 const cases = [
-  {
-    title:"CASE 1: THE MISSING LETTER",
-    desc:"Find two letters that disappeared.",
-    icon:"🔤", cls:"c1", type:"missingLetter"
-  },
-  {
-    title:"CASE 2: CAPITAL CLUE",
-    desc:"Match two uppercase clues to lowercase keys.",
-    icon:"🅰️", cls:"c2", type:"capitalMatch"
-  },
-  {
-    title:"CASE 3: FIRST-LETTER FILE",
-    desc:"Solve two picture clues in order.",
-    icon:"🍎", cls:"c3", type:"firstLetter"
-  },
-  {
-    title:"CASE 4: NUMBER HUNT",
-    desc:"Compare three evidence numbers.",
-    icon:"🔢", cls:"c4", type:"numberHunt"
-  },
-  {
-    title:"CASE 5: COUNT THE EVIDENCE",
-    desc:"Count up to 12 pieces of evidence.",
-    icon:"🔎", cls:"c5", type:"countEvidence"
-  },
-  {
-    title:"CASE 6: BEFORE & AFTER",
-    desc:"Find two missing numbers in the trail.",
-    icon:"🧩", cls:"c6", type:"missingNumber"
-  },
-  {
-    title:"CASE 7: LETTER CODE BREAKER",
-    desc:"Crack a four-letter secret code.",
-    icon:"🔐", cls:"c7", type:"letterCode"
-  },
-  {
-    title:"CASE 8: NUMBER CODE BREAKER",
-    desc:"Crack a five-number secret code.",
-    icon:"💻", cls:"c8", type:"numberCode"
-  }
+  {title:"CASE 1: MISSING LETTERS",desc:"Find two missing letters in the alphabet evidence.",icon:"🔤",cls:"c1",type:"missingLetter"},
+  {title:"CASE 2: LOWERCASE MATCH",desc:"Match two uppercase clues to lowercase keyboard keys.",icon:"🅰️",cls:"c2",type:"capitalMatch"},
+  {title:"CASE 3: PICTURE FILE",desc:"Use two picture clues to find their first letters.",icon:"🍎",cls:"c3",type:"firstLetter"},
+  {title:"CASE 4: PLACE VALUE",desc:"Find the digit in the ones place or tens place.",icon:"🔢",cls:"c4",type:"numberHunt"},
+  {title:"CASE 5: MOVING EVIDENCE",desc:"Count the moving evidence and type the total.",icon:"🔎",cls:"c5",type:"countEvidence"},
+  {title:"CASE 6: NUMBER TRAIL",desc:"Find two missing numbers in the evidence trail.",icon:"🧩",cls:"c6",type:"missingNumber"},
+  {title:"CASE 7: LETTER ESCAPE",desc:"Type the letter code to move the agent to safety.",icon:"🔐",cls:"c7",type:"letterCode"},
+  {title:"CASE 8: NUMBER ESCAPE",desc:"Type the number code to move the agent to safety.",icon:"💻",cls:"c8",type:"numberCode"}
 ];
+const ROUNDS_PER_CASE=5;
+const SAFE_LETTERS='ABCDEFGHIJKLMNPQRSTUVWXYZ'.split('');
+const SAFE_DIGITS='123456789'.split('');
 
 const caseGrid = document.getElementById("caseGrid");
 const home = document.getElementById("home");
@@ -544,11 +604,11 @@ function addPromptSpeaker(panel,text){
 
 
 const AGENCY_RANKS=[
-  {min:0,  next:10,  title:'AGENT IN TRAINING', img:'badge_bw.png'},
-  {min:10, next:25,  title:'JUNIOR DETECTIVE', img:'badge_silver.png'},
-  {min:25, next:45,  title:'SPECIAL AGENT', img:'badge2_silver.png'},
-  {min:45, next:70,  title:'MASTER DETECTIVE', img:'badge_gold.png'},
-  {min:70, next:null, title:'CHIEF INVESTIGATOR', img:'badge2_gold.png'}
+  {min:0,  next:8,  title:'AGENT IN TRAINING', img:'badge_bw.png'},
+  {min:8, next:18,  title:'JUNIOR DETECTIVE', img:'badge_silver.png'},
+  {min:18, next:30,  title:'SPECIAL AGENT', img:'badge2_silver.png'},
+  {min:30, next:45,  title:'MASTER DETECTIVE', img:'badge_gold.png'},
+  {min:45, next:null, title:'CHIEF INVESTIGATOR', img:'badge2_gold.png'}
 ];
 function getAgencyPoints(){return Number(localStorage.getItem('msKapleDetective_agencyPoints')||0)}
 function setAgencyPoints(v){
@@ -571,19 +631,22 @@ function updateRankDisplays(){
   const within=r.next ? r.points-r.min : 1;
   const span=r.next ? r.next-r.min : 1;
   const pct=r.next ? Math.max(0,Math.min(100,(within/span)*100)) : 100;
-  const nextText=r.next ? `${r.next-r.points} more clue${r.next-r.points===1?'':'s'} to next badge` : 'TOP AGENCY RANK!';
+  const until=r.next ? Math.max(0,r.next-r.points) : 0;
+  const nextText=r.next ? `${until} POINT${until===1?'':'S'} UNTIL NEXT BADGE` : 'TOP BADGE EARNED!';
   if(homeBox){
     homeBox.innerHTML=`
       <img src="${r.img}" alt="">
       <div>
         <div class="rankTitle">${r.title}</div>
-        <div class="rankSub">${nextText}</div>
+        <div class="rankSub">${r.points} POINTS • ${nextText}</div>
         <div class="rankProgress"><div style="width:${pct}%"></div></div>
       </div>
-      <div class="rankPoints">🕵️ ${r.points}<br>AGENCY POINTS</div>`;
+      <div class="rankPoints">${r.points}<br>POINTS</div>`;
+    homeBox.appendChild(makeSpeaker(`${r.title}. You have ${r.points} points. ${r.next?`${until} points until your next badge.`:'You earned the top badge.'}`,'miniSpeak'));
   }
   if(chip){
-    chip.innerHTML=`<img src="${r.img}" alt=""><span>${r.title}<br>${r.points} PTS</span>`;
+    chip.innerHTML=`<img src="${r.img}" alt=""><span>${r.points} POINTS<br>${nextText}</span>`;
+    chip.appendChild(makeSpeaker(`You have ${r.points} points. ${r.next?`${until} points until your next badge.`:'You earned the top badge.'}`,'miniSpeak'));
   }
 }
 function awardAgencyPoint(){
@@ -599,11 +662,11 @@ function showRankUp(rank,afterContinue){
     <img src="${rank.img}" alt="">
     <h2>RANK UP!</h2>
     <h3>${rank.title}</h3>
-    <p>You earned a new agency badge!</p>
+    <p>You earned a new badge!</p>
     <div class="readable rankSpeak"></div>
     <button>CONTINUE CASE</button>
   </div>`;
-  d.querySelector('.rankSpeak').appendChild(makeSpeaker(`Rank up! You are now ${rank.title}. You earned a new agency badge.`));
+  d.querySelector('.rankSpeak').appendChild(makeSpeaker(`Rank up! You are now ${rank.title}. You earned a new badge.`));
   d.querySelector('button').onclick=()=>{d.remove();afterContinue()};
   stage.appendChild(d)
 }
@@ -614,6 +677,71 @@ function setScore(v){
   localStorage.setItem(savedKey(cases[current].type),String(v));
 }
 function setRound(v){round=v;roundEl.textContent=v}
+
+function getCompletedCases(){
+  try{
+    const a=JSON.parse(localStorage.getItem('msKapleDetective_completedCases')||'[]');
+    return Array.from({length:cases.length},(_,i)=>Boolean(a[i]));
+  }catch(e){return Array(cases.length).fill(false)}
+}
+function saveCompletedCases(a){
+  localStorage.setItem('msKapleDetective_completedCases',JSON.stringify(a));
+}
+function markCaseCompleted(i){
+  const a=getCompletedCases();
+  const first=!a[i];
+  a[i]=true;
+  saveCompletedCases(a);
+  return first;
+}
+function completedCaseCount(){return getCompletedCases().filter(Boolean).length}
+function bonusesUnlocked(){return completedCaseCount()===cases.length}
+function updateCaseCompletion(){
+  const done=getCompletedCases();
+  document.querySelectorAll('.case-card').forEach((card,i)=>{
+    let stamp=card.querySelector('.completeStamp');
+    if(done[i]&&!stamp){
+      stamp=document.createElement('div');stamp.className='completeStamp';stamp.textContent='✓ COMPLETE';card.appendChild(stamp)
+    }
+    if(!done[i]&&stamp)stamp.remove()
+  })
+}
+function addBonusReadButtons(){
+  const info=[
+    ['bonusChase','Catch the Suspect. Press letters and numbers to chase the suspect across the screen.'],
+    ['bonusRush','Evidence Rush. A letter or number races across the screen. Press it before it escapes.'],
+    ['bonusLaser','Laser Escape. Press the correct keys to shut down moving lasers and move the agent to safety.'],
+    ['bonusVault','Crack the Vault. Solve a mixed letter and number code to unlock a surprise reward.']
+  ];
+  info.forEach(([id,text])=>{
+    const card=document.getElementById(id);if(!card)return;
+    const holder=card.querySelector('.bonusCardRead');if(holder&&!holder.childNodes.length)holder.appendChild(makeSpeaker(text,'miniSpeak'));
+  });
+  const bh=document.getElementById('bonusHeaderRead');
+  if(bh&&!bh.childNodes.length)bh.appendChild(makeSpeaker('Bonus missions. Complete all eight case files to unlock them.','miniSpeak'));
+}
+function updateBonusLocks(){
+  addBonusReadButtons();
+  const locked=!bonusesUnlocked();
+  const left=cases.length-completedCaseCount();
+  const note=document.getElementById('bonusUnlockNote');
+  if(note){
+    note.innerHTML=locked?`${left} CASE FILE${left===1?'':'S'} LEFT TO UNLOCK BONUS MISSIONS`:'BONUS MISSIONS UNLOCKED!';
+    if(!note.querySelector('.miniSpeak'))note.appendChild(makeSpeaker(locked?`${left} case files left to unlock bonus missions.`:'Bonus missions unlocked!','miniSpeak'))
+  }
+  ['bonusChase','bonusRush','bonusLaser','bonusVault'].forEach(id=>{
+    const card=document.getElementById(id);if(!card)return;
+    const old=card.querySelector('.lockOverlay');if(old)old.remove();
+    if(locked){
+      const ov=document.createElement('div');ov.className='lockOverlay';
+      const text=`Locked. Complete all eight case files first. You have ${left} case file${left===1?'':'s'} left.`;
+      ov.innerHTML=`<div><div class="lockIcon">🔒</div><strong>LOCKED</strong><div>COMPLETE ALL 8 CASE FILES</div><div class="lockRead"></div></div>`;
+      ov.querySelector('.lockRead').appendChild(makeSpeaker(text,'miniSpeak'));
+      card.appendChild(ov);
+    }
+  })
+}
+
 function clearKeyHandler(){
   if(keyHandler){window.removeEventListener("keydown",keyHandler);keyHandler=null}
 }
@@ -630,8 +758,8 @@ function toast(msg){
 }
 function random(arr){return arr[Math.floor(Math.random()*arr.length)]}
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
-function letter(){return String.fromCharCode(65+Math.floor(Math.random()*26))}
-function number0to9(){return Math.floor(Math.random()*10)}
+function letter(){return random(SAFE_LETTERS)}
+function number0to9(){return Number(random(SAFE_DIGITS))}
 
 const caseArt=[
   ['magnifier.png','fingerprint.png'],
@@ -667,12 +795,18 @@ cases.forEach((c,i)=>{
 
 function showHome(){
   clearKeyHandler();
+  window._currentBonusStart=null;
   game.classList.remove("active");
   home.classList.add("active");
   updateRankDisplays();
+  updateCaseCompletion();
+  updateBonusLocks();
+  document.getElementById("prevBtn").hidden=false;
+  document.getElementById("nextBtn").hidden=false;
   setTimeout(autoFit,0);
 }
 function startCase(i){
+  window._currentBonusStart=null;
   current=(i+cases.length)%cases.length;
   home.classList.remove("active");
   game.classList.add("active");
@@ -685,6 +819,7 @@ function startCase(i){
   setTimeout(autoFit,0);
 }
 function restartCase(){
+  if(window._currentBonusStart && document.getElementById("prevBtn").hidden){window._currentBonusStart();return}
   localStorage.setItem(savedKey(cases[current].type),"0");
   score=0;scoreEl.textContent=0;setRound(1);setupCase();
 }
@@ -699,7 +834,7 @@ function basePanel(){
 }
 function progress(){
   const bar=document.createElement("div");bar.className="progressBar";
-  bar.innerHTML=`<div class="progressFill" style="width:${((round-1)/10)*100}%"></div>`;
+  bar.innerHTML=`<div class="progressFill" style="width:${((round-1)/ROUNDS_PER_CASE)*100}%"></div>`;
   stage.appendChild(bar)
 }
 
@@ -736,9 +871,9 @@ function maybeMiniEvidence(onClose){
 function correct(){
   setScore(score+1);
   const newRank=awardAgencyPoint();
-  toast("CASE CLUE FOUND! 🔎");
+  toast("POINT EARNED! ⭐");
   const advance=()=>{
-    if(round>=10){setTimeout(solved,350)}
+    if(round>=ROUNDS_PER_CASE){setTimeout(solved,350)}
     else{setRound(round+1);setTimeout(setupCase,300)}
   };
   if(newRank){setTimeout(()=>showRankUp(newRank,advance),350)}
@@ -750,13 +885,20 @@ function correct(){
 }
 function solved(){
   clearKeyHandler();
+  const firstTime=markCaseCompleted(current);
+  const unlockedNow=bonusesUnlocked()&&firstTime;
   const d=document.createElement("div");d.className="solve";
   const rank=currentRank();
-  d.innerHTML=`<div class="solveBox"><img src="${rank.img}" style="width:140px;height:150px;object-fit:contain" alt=""><h2>CASE SOLVED!</h2><p>Case Score: ${score}<br>Agency Rank: ${rank.title} • ${rank.points} points</p><div class="readable" id="solveRead"></div><button class="again">SOLVE AGAIN</button><button class="cases">CASE FILES</button></div>`;
-  d.querySelector('#solveRead').appendChild(makeSpeaker(`Case solved! Your case score is ${score}. Your agency rank is ${rank.title} with ${rank.points} agency points.`));
-  d.querySelector(".again").onclick=()=>{setRound(1);setupCase()};
+  const until=rank.next?Math.max(0,rank.next-rank.points):0;
+  d.innerHTML=`<div class="solveBox"><img src="${unlockedNow?'badge2_gold.png':rank.img}" style="width:140px;height:150px;object-fit:contain" alt=""><h2>CASE SOLVED!</h2>
+  <p>${rank.points} POINTS<br>${rank.next?`${until} POINT${until===1?'':'S'} UNTIL NEXT BADGE`:'TOP BADGE EARNED!'}</p>
+  ${unlockedNow?'<p><strong>🔓 BONUS MISSIONS UNLOCKED!</strong></p>':''}
+  <div class="readable" id="solveRead"></div><button class="again">PLAY CASE AGAIN</button><button class="cases">CASE FILES</button></div>`;
+  d.querySelector('#solveRead').appendChild(makeSpeaker(`Case solved! You have ${rank.points} points. ${rank.next?`${until} points until your next badge.`:'You earned the top badge.'} ${unlockedNow?'Bonus missions are now unlocked.':''}`));
+  d.querySelector(".again").onclick=()=>{d.remove();setRound(1);setupCase()};
   d.querySelector(".cases").onclick=showHome;
-  stage.appendChild(d)
+  stage.appendChild(d);
+  showFunConfetti(d)
 }
 function listenFor(expected,onWrong){
   clearKeyHandler();
@@ -798,10 +940,10 @@ function listenForSequence(expectedList,onWrong){
     e.preventDefault();
     if(val===String(expectedList[idx]).toUpperCase()){
       idx++;
-      toast(idx>=expectedList.length ? "CLUE COMPLETE! 🔎" : "GOOD! NEXT CLUE.");
+      toast(idx>=expectedList.length ? "DONE! ⭐" : "GOOD! NEXT ONE.");
       if(idx>=expectedList.length)setTimeout(correct,300);
     }else{
-      toast(onWrong||"CHECK THE CLUE ORDER!");
+      toast(onWrong||"CHECK THE ORDER!");
     }
   };
   window.addEventListener("keydown",keyHandler)
@@ -858,171 +1000,160 @@ function showFunConfetti(parent=stage){
   }
 }
 
-function startBonusChase(){
+function startBonusShell(title,startFn){
   clearKeyHandler();
   home.classList.remove('active');
   game.classList.add('active');
-  gameTitle.textContent='BONUS MISSION: CATCH THE SUSPECT';
-  scoreEl.textContent='—';roundEl.textContent='—';
-  briefing.innerHTML='';
+  gameTitle.textContent=title;
+  document.getElementById("prevBtn").hidden=true;
+  document.getElementById("nextBtn").hidden=true;
+  updateRankDisplays();
   resetStage();
   stage.innerHTML='<div id="toast"></div>';
+  window._currentBonusStart=startFn;
+}
+function finishBonus(scene,title,points,startFn){
+  clearKeyHandler();
+  const before=currentRank();
+  setAgencyPoints(before.points+points);
+  const after=currentRank();
+  const flash=document.createElement('div');flash.className='missionDone';
+  flash.innerHTML=`<div><img src="${after.img}" style="width:160px;height:160px;object-fit:contain"><br>${title}
+    <div style="font-family:VAG;font-size:26px;margin-top:7px">+${points} POINTS</div>
+    <div class="doneRead"></div>
+    <button class="againBonus" style="margin-top:12px;border:4px solid #17202a;border-radius:13px;padding:9px 16px;background:#fff">PLAY AGAIN</button>
+    <button class="casesBonus" style="margin-top:12px;border:4px solid #17202a;border-radius:13px;padding:9px 16px;background:#fff">CASE FILES</button>
+  </div>`;
+  flash.querySelector('.doneRead').appendChild(makeSpeaker(`${title}. You earned ${points} points. ${after.next?`${after.next-after.points} points until your next badge.`:'You earned the top badge.'}`));
+  flash.querySelector('.againBonus').onclick=startFn;
+  flash.querySelector('.casesBonus').onclick=showHome;
+  scene.appendChild(flash);
+  showFunConfetti(flash)
+}
+function startBonusChase(){
+  if(!bonusesUnlocked()){showHome();return}
+  startBonusShell('BONUS: CATCH THE SUSPECT',startBonusChase);
   const scene=document.createElement('div');scene.className='chaseScene';
   scene.innerHTML=`
-    <div class="cityBuilding" style="left:0;width:22%;height:150px"></div>
-    <div class="cityBuilding" style="left:27%;width:18%;height:220px"></div>
-    <div class="cityBuilding" style="left:51%;width:20%;height:175px"></div>
-    <div class="cityBuilding" style="right:0;width:24%;height:240px"></div>
-    <div class="chasePrompt">
-      <div style="font-size:20px">PRESS THE KEY TO MOVE!</div>
-      <div class="targetKey" id="chaseKey">A</div>
-      <div id="chaseSpeak"></div>
-    </div>
-    <div class="chaseTrack">
-      <img class="chaseAgent" src="agent_boy.png" alt="">
-      <img class="chaseSuspect" src="agent_girl.png" alt="">
-    </div>
+    <div class="chasePrompt"><div style="font-size:20px">PRESS THE KEY TO MOVE!</div><div class="targetKey" id="chaseKey">A</div><div id="chaseSpeak"></div></div>
+    <div class="chaseTrack"><img class="chaseAgent" src="agent_boy.png" alt=""><img class="chaseSuspect" src="agent_girl.png" alt=""></div>
     <div class="chaseMeter"><div class="chaseMeterFill"></div></div>`;
   stage.appendChild(scene);
-
-  let steps=0;
-  let target='';
-  const keyEl=scene.querySelector('#chaseKey');
-  const agent=scene.querySelector('.chaseAgent');
-  const meter=scene.querySelector('.chaseMeterFill');
-  const speakBox=scene.querySelector('#chaseSpeak');
-
+  let steps=0,target='';
+  const keyEl=scene.querySelector('#chaseKey'),agent=scene.querySelector('.chaseAgent'),meter=scene.querySelector('.chaseMeterFill'),speakBox=scene.querySelector('#chaseSpeak');
   function nextTarget(){
-    target=Math.random()<.58 ? letter() : String(number0to9());
-    keyEl.textContent=target;
-    speakBox.innerHTML='';
-    speakBox.appendChild(makeSpeaker(`Press ${target} to move closer to the suspect.`));
+    target=Math.random()<.55?random(SAFE_LETTERS):random(SAFE_DIGITS);
+    keyEl.textContent=target;speakBox.innerHTML='';speakBox.appendChild(makeSpeaker(`Press ${target} to move closer to the suspect.`));
   }
   nextTarget();
-
   keyHandler=e=>{
     if(e.key.length!==1)return;
     const val=e.key.toUpperCase();
-    if(val!==target.toUpperCase()){toast('WRONG CLUE — TRY AGAIN!');return}
-    e.preventDefault();
-    steps++;
-    agent.style.left=Math.min(78,steps*8)+'%';
-    meter.style.width=Math.min(100,steps*10)+'%';
-    toast('GO! GO! GO!');
-    if(steps>=10){
-      clearKeyHandler();
-      const flash=document.createElement('div');flash.className='catchFlash';
-      flash.innerHTML='SUSPECT<br>CAUGHT!';
-      scene.appendChild(flash);
-      showFunConfetti(flash);
-      const pts=getAgencyPoints();
-      setAgencyPoints(pts+3);
-      setTimeout(()=>{
-        flash.innerHTML=`<div><img src="badge_gold.png" style="width:170px;height:170px;object-fit:contain"><br>MISSION COMPLETE!<br><span style="font-family:VAG;font-size:28px">+3 AGENCY POINTS</span><br><button id="chaseAgain" style="margin-top:16px;border:4px solid #17202a;border-radius:14px;padding:10px 18px;background:white">PLAY AGAIN</button></div>`;
-        flash.querySelector('#chaseAgain').onclick=startBonusChase;
-      },900);
-    }else nextTarget()
+    if(val!==target){toast('TRY AGAIN.');return}
+    e.preventDefault();steps++;agent.style.left=Math.min(78,steps*8)+'%';meter.style.width=Math.min(100,steps*10)+'%';
+    if(steps>=10)finishBonus(scene,'SUSPECT CAUGHT!',3,startBonusChase);else nextTarget()
   };
-  window.addEventListener('keydown',keyHandler);
-  setTimeout(autoFit,0)
+  window.addEventListener('keydown',keyHandler);setTimeout(autoFit,0)
 }
-
+function startEvidenceRush(){
+  if(!bonusesUnlocked()){showHome();return}
+  startBonusShell('BONUS: EVIDENCE RUSH',startEvidenceRush);
+  const scene=document.createElement('div');scene.className='rushScene';
+  scene.innerHTML=`<div class="missionPrompt"><div>PRESS THE MOVING KEY BEFORE IT ESCAPES!</div><div class="promptRead"></div></div>
+    <div class="rushLane"><div class="rushCard"></div></div>
+    <div class="chaseMeter"><div class="chaseMeterFill"></div></div>`;
+  stage.appendChild(scene);
+  let hits=0,target='',locked=false;
+  const card=scene.querySelector('.rushCard'),meter=scene.querySelector('.chaseMeterFill'),read=scene.querySelector('.promptRead');
+  function launch(){
+    target=Math.random()<.55?random(SAFE_LETTERS):random(SAFE_DIGITS);
+    card.textContent=target;read.innerHTML='';read.appendChild(makeSpeaker(`Find ${target} on your keyboard and press it before the evidence escapes.`));
+    card.classList.remove('fly');void card.offsetWidth;card.classList.add('fly')
+  }
+  card.addEventListener('animationend',()=>{if(hits<8){toast('IT ESCAPED — SAME KEY AGAIN!');launch()}});
+  launch();
+  keyHandler=e=>{
+    if(locked||e.key.length!==1)return;
+    const val=e.key.toUpperCase();
+    if(val!==target){toast('TRY AGAIN.');return}
+    e.preventDefault();locked=true;hits++;meter.style.width=(hits/8*100)+'%';card.classList.remove('fly');card.style.background='#dff7df';
+    setTimeout(()=>{card.style.background='#fff';locked=false;if(hits>=8)finishBonus(scene,'EVIDENCE SECURED!',3,startEvidenceRush);else launch()},260)
+  };
+  window.addEventListener('keydown',keyHandler);setTimeout(autoFit,0)
+}
+function startLaserEscape(){
+  if(!bonusesUnlocked()){showHome();return}
+  startBonusShell('BONUS: LASER ESCAPE',startLaserEscape);
+  const scene=document.createElement('div');scene.className='laserScene';
+  scene.innerHTML=`<div class="missionPrompt"><div>PRESS THE KEY TO SHUT DOWN THE LASER!</div><div class="targetKey"></div><div class="promptRead"></div></div>
+    <div class="laserFloor"><img class="laserAgent" src="agent_girl.png" alt=""><div class="laserBeam"></div></div>
+    <div class="chaseMeter"><div class="chaseMeterFill"></div></div>`;
+  stage.appendChild(scene);
+  let gates=0,target='';
+  const key=scene.querySelector('.targetKey'),agent=scene.querySelector('.laserAgent'),laser=scene.querySelector('.laserBeam'),meter=scene.querySelector('.chaseMeterFill'),read=scene.querySelector('.promptRead');
+  function next(){
+    target=Math.random()<.55?random(SAFE_LETTERS):random(SAFE_DIGITS);
+    key.textContent=target;laser.classList.remove('off');read.innerHTML='';read.appendChild(makeSpeaker(`Press ${target} to shut down the moving laser.`))
+  }
+  next();
+  keyHandler=e=>{
+    if(e.key.length!==1)return;
+    const val=e.key.toUpperCase();
+    if(val!==target){toast('TRY AGAIN.');return}
+    e.preventDefault();gates++;laser.classList.add('off');agent.style.left=Math.min(82,gates*(82/8))+'%';meter.style.width=(gates/8*100)+'%';
+    setTimeout(()=>{if(gates>=8)finishBonus(scene,'LASERS DISABLED!',3,startLaserEscape);else next()},350)
+  };
+  window.addEventListener('keydown',keyHandler);setTimeout(autoFit,0)
+}
 function startBonusVault(){
-  clearKeyHandler();
-  home.classList.remove('active');
-  game.classList.add('active');
-  gameTitle.textContent='BONUS MISSION: CRACK THE VAULT';
-  scoreEl.textContent='—';roundEl.textContent='—';
-  briefing.innerHTML='';
-  resetStage();
-  stage.innerHTML='<div id="toast"></div>';
-
-  const safeLetters='ABCDEFGHIJKLMNPQRSTUVWXYZ'.split(''); // no O
-  const safeNumbers='123456789'.split('');                 // no 0
-  const mixedPool=[...safeLetters,...safeNumbers];
-  const code=Array.from({length:5},()=>mixedPool[Math.floor(Math.random()*mixedPool.length)]);
-  let idx=0;
-
+  if(!bonusesUnlocked()){showHome();return}
+  startBonusShell('BONUS: CRACK THE VAULT',startBonusVault);
+  const pool=[...SAFE_LETTERS,...SAFE_DIGITS];
+  const code=Array.from({length:5},()=>random(pool));
+  let idx=0,locked=false;
   const scene=document.createElement('div');scene.className='vaultScene';
-  scene.innerHTML=`
-    <div class="vaultDoor"><div class="vaultWheel"></div></div>
-    <div class="vaultPanel">
-      <img src="fingerprint.png" style="width:120px;height:120px;object-fit:contain" alt="">
-      <div style="font-family:Homebody;font-size:42px">SECRET VAULT CODE</div>
-      <div class="vaultCode clueVaultCode">
-        ${code.map((c,i)=>`<div class="codeCell clueVaultCell ${i===0?'active':''}">${c}</div>`).join('')}
-      </div>
-      <div style="font-family:Homebody;font-size:28px;margin-top:8px">YOUR CODE</div>
-      <div class="vaultCode typedVaultCode">
-        ${code.map(()=>`<div class="codeCell typedVaultCell">?</div>`).join('')}
-      </div>
-      <div>PRESS EACH LETTER OR NUMBER IN ORDER</div>
-      <div id="vaultSpeak" style="margin-top:12px"></div>
+  scene.innerHTML=`<div class="vaultDoor"><div class="vaultWheel"></div></div>
+    <div class="vaultPanel"><img src="fingerprint.png" style="width:105px;height:105px;object-fit:contain" alt="">
+      <div style="font-family:Homebody;font-size:39px">SECRET VAULT CODE</div>
+      <div class="vaultCode clueVaultCode">${code.map((c,i)=>`<div class="codeCell clueVaultCell ${i===0?'active':''}">${c}</div>`).join('')}</div>
+      <div style="font-family:Homebody;font-size:27px;margin-top:6px">YOUR CODE</div>
+      <div class="vaultCode typedVaultCode">${code.map(()=>`<div class="codeCell typedVaultCell">?</div>`).join('')}</div>
+      <div>PRESS EACH LETTER OR NUMBER IN ORDER</div><div id="vaultSpeak" style="margin-top:9px"></div>
     </div>`;
   stage.appendChild(scene);
-  scene.querySelector('#vaultSpeak').appendChild(makeSpeaker('Press each letter or number in the secret vault code, from left to right.'));
-
-  const clueCells=[...scene.querySelectorAll('.clueVaultCell')];
-  const typedCells=[...scene.querySelectorAll('.typedVaultCell')];
-  let locked=false;
-
+  scene.querySelector('#vaultSpeak').appendChild(makeSpeaker('Press each letter or number in the secret vault code from left to right.'));
+  const clueCells=[...scene.querySelectorAll('.clueVaultCell')],typedCells=[...scene.querySelectorAll('.typedVaultCell')];
   keyHandler=e=>{
-    if(locked)return;
-    if(e.key.length!==1)return;
+    if(locked||e.key.length!==1)return;
     const v=e.key.toUpperCase();
-    if(!/^[A-Z0-9]$/.test(v))return;
+    if(!pool.includes(v))return;
     e.preventDefault();
-
-    if(v===String(code[idx]).toUpperCase()){
-      typedCells[idx].textContent=v;
-      typedCells[idx].style.background='#dff7df';
-      clueCells[idx].classList.remove('active');
-      idx++;
-      if(idx>=code.length){
-        clearKeyHandler();
-        const rewards=[
-          ['badge2_gold.png','TOP SECRET GOLD BADGE'],
-          ['camera_agent.png','SECRET CAMERA'],
-          ['briefcase.png','AGENT BRIEFCASE'],
-          ['radio.png','SPY RADIO']
-        ];
-        const reward=rewards[Math.floor(Math.random()*rewards.length)];
-        const d=document.createElement('div');d.className='vaultReward';
-        d.innerHTML=`<div class="vaultRewardBox">
-          <img src="${reward[0]}" alt="">
-          <h2>VAULT OPEN!</h2>
-          <div style="font-size:25px">YOU FOUND THE ${reward[1]}!</div>
-          <div id="vaultRewardSpeak" style="margin:12px"></div>
-          <div style="font-size:22px">+2 AGENCY POINTS</div>
-          <button id="vaultAgain" style="margin-top:15px;border:4px solid #17202a;border-radius:14px;padding:10px 18px;background:#ffd84a">CRACK ANOTHER VAULT</button>
-        </div>`;
-        scene.appendChild(d);
-        d.querySelector('#vaultRewardSpeak').appendChild(makeSpeaker(`Vault open! You found the ${reward[1]}.`));
-        setAgencyPoints(getAgencyPoints()+2);
-        showFunConfetti(d);
-        d.querySelector('#vaultAgain').onclick=startBonusVault;
-      }else{
-        clueCells[idx].classList.add('active');
-        toast('CODE MATCH!')
-      }
+    if(v===code[idx]){
+      typedCells[idx].textContent=v;typedCells[idx].style.background='#dff7df';clueCells[idx].classList.remove('active');idx++;
+      if(idx>=code.length)finishBonus(scene,'VAULT OPEN!',3,startBonusVault);else clueCells[idx].classList.add('active')
     }else{
-      locked=true;
-      typedCells[idx].textContent=v;
-      typedCells[idx].style.background='#ffd7df';
-      toast('VAULT CODE DOES NOT MATCH!');
-      setTimeout(()=>{
-        typedCells[idx].textContent='?';
-        typedCells[idx].style.background='';
-        locked=false;
-      },500);
+      locked=true;typedCells[idx].textContent=v;typedCells[idx].style.background='#ffd7df';toast('TRY THAT CODE SPOT AGAIN.');
+      setTimeout(()=>{typedCells[idx].textContent='?';typedCells[idx].style.background='';locked=false},500)
     }
   };
-  window.addEventListener('keydown',keyHandler);
-  setTimeout(autoFit,0)
+  window.addEventListener('keydown',keyHandler);setTimeout(autoFit,0)
 }
+function launchBonus(id,fn){
+  const card=document.getElementById(id);
+  if(!card)return;
+  card.onclick=e=>{if(e.target.closest('.miniSpeak')||e.target.closest('.lockOverlay'))return;if(bonusesUnlocked())fn()};
+  card.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&bonusesUnlocked()){e.preventDefault();fn()}}
+}
+launchBonus('bonusChase',startBonusChase);
+launchBonus('bonusRush',startEvidenceRush);
+launchBonus('bonusLaser',startLaserEscape);
+launchBonus('bonusVault',startBonusVault);
+updateCaseCompletion();
+updateBonusLocks();
 
-document.getElementById('bonusChase').onclick=startBonusChase;
-document.getElementById('bonusVault').onclick=startBonusVault;
+
+const homeCaseNote=document.querySelector('.case-note');
+if(homeCaseNote&&!homeCaseNote.querySelector('.miniSpeak'))homeCaseNote.appendChild(makeSpeaker('Detectives, choose a case file and use your keyboard to solve it. Complete all eight case files to unlock the moving bonus missions.','miniSpeak'));
 
 // CASE 1
 const alphabetEvidenceBank=[
@@ -1034,18 +1165,11 @@ const alphabetEvidenceBank=[
   {seq:['F','G','H','I','J','K','L'], blanks:[2,5]},
   {seq:['G','H','I','J','K','L','M'], blanks:[1,5]},
   {seq:['H','I','J','K','L','M','N'], blanks:[2,4]},
-  {seq:['I','J','K','L','M','N','O'], blanks:[1,4]},
-  {seq:['J','K','L','M','N','O','P'], blanks:[2,5]},
-  {seq:['K','L','M','N','O','P','Q'], blanks:[1,5]},
-  {seq:['L','M','N','O','P','Q','R'], blanks:[2,4]},
-  {seq:['M','N','O','P','Q','R','S'], blanks:[1,4]},
-  {seq:['N','O','P','Q','R','S','T'], blanks:[2,5]},
-  {seq:['O','P','Q','R','S','T','U'], blanks:[1,5]},
-  {seq:['P','Q','R','S','T','U','V'], blanks:[2,4]},
-  {seq:['Q','R','S','T','U','V','W'], blanks:[1,4]},
-  {seq:['R','S','T','U','V','W','X'], blanks:[2,5]},
-  {seq:['S','T','U','V','W','X','Y'], blanks:[1,5]},
-  {seq:['T','U','V','W','X','Y','Z'], blanks:[2,4]}
+  {seq:['P','Q','R','S','T','U','V'], blanks:[1,4]},
+  {seq:['Q','R','S','T','U','V','W'], blanks:[2,5]},
+  {seq:['R','S','T','U','V','W','X'], blanks:[1,5]},
+  {seq:['S','T','U','V','W','X','Y'], blanks:[2,4]},
+  {seq:['T','U','V','W','X','Y','Z'], blanks:[1,4]}
 ];
 let lastAlphabetEvidence=-1;
 
@@ -1088,7 +1212,7 @@ function missingLetter(){
     if(val===correctAnswer){
       showTypedInBox(answerBoxes[idx],val,true);
       idx++;
-      toast(idx>=answers.length ? "ALPHABET CLUE SOLVED! 🔎" : "GOOD! NOW THE NEXT BLANK.");
+      toast(idx>=answers.length ? "ALPHABET SOLVED! 🔎" : "GOOD! NOW THE NEXT BLANK.");
       if(idx>=answers.length)setTimeout(correct,350);
     }else{
       locked=true;
@@ -1101,8 +1225,7 @@ function missingLetter(){
 
 // CASE 2
 function capitalMatch(){
-  const pool=Array.from({length:26},(_,i)=>String.fromCharCode(65+i));
-  const letters=shuffle(pool).slice(0,2);
+  const letters=shuffle(SAFE_LETTERS).slice(0,2);
   const text=`Match both uppercase clues. Press lowercase ${letters[0].toLowerCase()}, then lowercase ${letters[1].toLowerCase()}. Do not use Shift.`;
   setBriefing('🅰️',text);
   const p=basePanel();
@@ -1172,7 +1295,6 @@ const emojiLetters=[
   {emoji:'🦁',letter:'L',word:'lion'},
   {emoji:'🌙',letter:'M',word:'moon'},
   {emoji:'👃',letter:'N',word:'nose'},
-  {emoji:'🐙',letter:'O',word:'octopus'},
   {emoji:'🐷',letter:'P',word:'pig'},
   {emoji:'👸',letter:'Q',word:'queen'},
   {emoji:'🤖',letter:'R',word:'robot'},
@@ -1228,12 +1350,12 @@ function firstLetter(){
     if(val===answers[idx]){
       showTypedInBox(boxes[idx],val,true);
       idx++;
-      toast(idx>=answers.length ? "PICTURE CLUES SOLVED! 🔎" : "GOOD! NOW THE NEXT PICTURE.");
+      toast(idx>=answers.length ? "PICTURES SOLVED! 🔎" : "GOOD! NOW THE NEXT PICTURE.");
       if(idx>=answers.length)setTimeout(correct,350);
     }else{
       locked=true;
       showTypedInBox(boxes[idx],val,false,()=>{locked=false});
-      toast("CHECK THE PICTURE CLUE!");
+      toast("CHECK THE PICTURE!");
     }
   };
   window.addEventListener("keydown",keyHandler)
@@ -1241,49 +1363,89 @@ function firstLetter(){
 
 // CASE 4
 function numberHunt(){
-  const nums=shuffle([0,1,2,3,4,5,6,7,8,9]).slice(0,3).sort((a,b)=>a-b);
-  const modes=[
-    {label:'smallest',answer:nums[0]},
-    {label:'largest',answer:nums[2]},
-    {label:'middle',answer:nums[1]}
-  ];
-  const mode=random(modes);
-  const text=`Look at the three evidence numbers. Press the ${mode.label} number.`;
+  const tens=random(SAFE_DIGITS),ones=random(SAFE_DIGITS),num=`${tens}${ones}`;
+  const place=Math.random()<.5?'tens':'ones';
+  const answer=place==='tens'?tens:ones;
+  const text=`The number is ${num}. Which digit is in the ${place} place? Press that digit.`;
   setBriefing('🔢',text);
   const p=basePanel();
   p.innerHTML=`<div>
     <div class="smallPrompt">NUMBER EVIDENCE</div>
-    <div class="sequence" style="margin-top:24px">
-      ${shuffle(nums).map(n=>`<div class="seqBox">${n}</div>`).join("")}
-    </div>
-    <div class="smallPrompt" style="margin-top:22px">PRESS THE ${mode.label.toUpperCase()} NUMBER</div>
+    <div class="bigPrompt">${num}</div>
+    <div class="smallPrompt">WHICH DIGIT IS IN THE ${place.toUpperCase()} PLACE?</div>
+    <div class="sequence" style="margin-top:15px"><div class="seqBox blank placeAnswer">?</div></div>
   </div>`;
   addPromptSpeaker(p,text);
-  listenFor(String(mode.answer))
+  const box=p.querySelector('.placeAnswer');let locked=false;
+  clearKeyHandler();
+  keyHandler=e=>{
+    if(locked||!SAFE_DIGITS.includes(e.key))return;
+    e.preventDefault();
+    if(e.key===answer){
+      showTypedInBox(box,e.key,true);
+      toast('PLACE VALUE SOLVED!');
+      setTimeout(correct,350);
+    }else{
+      locked=true;
+      showTypedInBox(box,e.key,false,()=>{locked=false});
+      toast(`TRY THE ${place.toUpperCase()} PLACE AGAIN.`);
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
 }
 
 // CASE 5
-const countEmojis=["⭐","🔎","🗝️","👣","💎","🧩"];
+const movingEvidenceImages=['magnifier.png','fingerprint.png','camera_agent.png','radio.png'];
 function countEvidence(){
-  const n=5+Math.floor(Math.random()*8); // 5-12
-  const emo=random(countEmojis);
-  const text='Count all the evidence pictures. Type the number you counted.';
+  const counts=[5,6,7,8,9,11,12];
+  const n=random(counts);
+  const img=random(movingEvidenceImages);
+  const text='Count all the moving evidence. Type the number you counted.';
   setBriefing('🔎',text);
   const p=basePanel();
-  p.innerHTML=`<div>
-    <div class="countArea">${Array(n).fill(`<span>${emo}</span>`).join("")}</div>
-    <div class="smallPrompt" style="margin-top:22px">HOW MANY PIECES OF EVIDENCE?</div>
-    <div class="hint">Some answers have two digits.</div>
+  const positions=Array.from({length:n},(_,i)=>{
+    const cols=6,row=Math.floor(i/cols),col=i%cols;
+    return {left:5+col*15+(row%2?4:0),top:18+row*88+(i%3)*3,delay:(i*.13)%1.4};
+  });
+  p.innerHTML=`<div style="width:100%">
+    <div class="movingEvidenceArea">
+      ${positions.map(o=>`<img class="movingEvidence" src="${img}" style="left:${o.left}%;top:${o.top}px;animation-delay:${o.delay}s" alt="">`).join('')}
+    </div>
+    <div class="smallPrompt" style="margin-top:12px">HOW MANY?</div>
+    <div class="sequence"><div class="seqBox blank countAnswer">?</div></div>
   </div>`;
   addPromptSpeaker(p,text);
-  listenForNumberString(n)
+  const box=p.querySelector('.countAnswer'),target=String(n);
+  let typed='',locked=false;
+  clearKeyHandler();
+  keyHandler=e=>{
+    if(locked||!SAFE_DIGITS.includes(e.key))return;
+    e.preventDefault();
+    typed+=e.key;
+    box.textContent=typed;box.classList.remove('blank');box.style.background='#fff8c9';
+    if(!target.startsWith(typed)){
+      locked=true;box.style.background='#ffd7df';toast('COUNT AGAIN.');
+      setTimeout(()=>{typed='';box.textContent='?';box.classList.add('blank');box.style.background='';locked=false},500);
+      return;
+    }
+    if(typed===target){
+      box.style.background='#dff7df';toast('EVIDENCE COUNTED!');
+      setTimeout(correct,350);
+    }
+  };
+  window.addEventListener("keydown",keyHandler)
 }
 
 // CASE 6
+const NUMBER_TRAILS=[
+  [11,12,13,14,15,16,17],[12,13,14,15,16,17,18],[13,14,15,16,17,18,19],
+  [21,22,23,24,25,26,27],[22,23,24,25,26,27,28],[23,24,25,26,27,28,29],
+  [31,32,33,34,35,36,37],[32,33,34,35,36,37,38],[33,34,35,36,37,38,39],
+  [41,42,43,44,45,46,47],[42,43,44,45,46,47,48],[43,44,45,46,47,48,49]
+];
 function missingNumber(){
-  const start=Math.floor(Math.random()*13);
-  const seq=[start,start+1,start+2,start+3,start+4,start+5,start+6];
-  const blanks=shuffle([1,2,3,4,5]).slice(0,2).sort((a,b)=>a-b);
+  const seq=[...random(NUMBER_TRAILS)];
+  const blanks=random([[1,4],[2,5],[1,5],[2,4]]);
   const answers=blanks.map(i=>String(seq[i]));
   const text='Two numbers are missing. Type the missing numbers from left to right.';
   setBriefing('🧩',text);
@@ -1293,42 +1455,44 @@ function missingNumber(){
     <div class="sequence" style="margin-top:25px">
       ${seq.map((x,i)=>`<div class="seqBox ${blanks.includes(i)?"blank":""}" ${blanks.includes(i)?`data-number-answer="${blanks.indexOf(i)}"`:""}>${blanks.includes(i)?"?":x}</div>`).join("")}
     </div>
-    <div class="hint" style="margin-top:20px">Some missing numbers may have two digits.</div>
+    <div class="hint" style="margin-top:20px">Type the whole missing number, then move to the next blank.</div>
   </div>`;
   addPromptSpeaker(p,text);
 
   const boxes=[...p.querySelectorAll('[data-number-answer]')];
   clearKeyHandler();
-  let answerIndex=0, typed="";
+  let answerIndex=0,typed="",locked=false;
   keyHandler=e=>{
-    if(!/^[0-9]$/.test(e.key))return;
+    if(locked||!SAFE_DIGITS.includes(e.key))return;
     e.preventDefault();
     const target=answers[answerIndex];
-    typed += e.key;
-
-    // Show partial two-digit input as they type.
+    typed+=e.key;
     boxes[answerIndex].textContent=typed;
+    boxes[answerIndex].classList.remove('blank');
     boxes[answerIndex].style.background='#fff8c9';
 
     if(!target.startsWith(typed)){
-      typed="";
-      boxes[answerIndex].textContent='?';
-      boxes[answerIndex].style.background='';
-      toast("CHECK THE NUMBER TRAIL!");
+      locked=true;
+      boxes[answerIndex].style.background='#ffd7df';
+      toast("TRY THAT NUMBER AGAIN.");
+      setTimeout(()=>{
+        typed="";
+        boxes[answerIndex].textContent='?';
+        boxes[answerIndex].classList.add('blank');
+        boxes[answerIndex].style.background='';
+        locked=false;
+      },500);
       return;
     }
     if(typed===target){
       boxes[answerIndex].textContent=target;
       boxes[answerIndex].classList.remove('blank');
       boxes[answerIndex].style.background='#dff7df';
-      answerIndex++;
-      typed="";
+      answerIndex++;typed="";
       if(answerIndex>=answers.length){
         toast("NUMBER TRAIL SOLVED!");
         setTimeout(correct,350);
-      }else{
-        toast("GOOD! FIND THE NEXT NUMBER.");
-      }
+      }else toast("GOOD! FIND THE NEXT NUMBER.");
     }
   };
   window.addEventListener("keydown",keyHandler)
@@ -1362,45 +1526,45 @@ function showCodeReward(nextAction){
 function letterCode(){
   const code=Array.from({length:4},()=>letter());
   let idx=0;
-  setBriefing('🔐','Crack the four-letter code. Press the letters in order.');
+  setBriefing('🔐','Type the four-letter code in order to move the agent to safety.');
   const p=basePanel();
-
-  p.innerHTML=`<div>
-    <div class="smallPrompt">SECRET LETTER CODE</div>
-    <div class="sequence clueCode" style="margin-top:16px">
-      ${code.map((x,i)=>`<div class="seqBox clueCell ${i===0?'activeClue':''}">${x}</div>`).join("")}
+  p.innerHTML=`<div style="width:100%">
+    <div class="runnerTrack">
+      ${[20,40,60,80].map(x=>`<span class="checkpoint" style="left:${x}%"></span>`).join('')}
+      <img class="runnerAgent" src="agent_boy.png" alt="">
     </div>
-    <div class="smallPrompt" style="margin-top:18px">YOUR CODE</div>
-    <div class="sequence typedCode" style="margin-top:10px">
+    <div class="smallPrompt">SECRET LETTER CODE</div>
+    <div class="sequence clueCode" style="margin-top:10px">
+      ${code.map((x,i)=>`<div class="seqBox clueCell" style="${i===0?'background:#fff8c9':''}">${x}</div>`).join("")}
+    </div>
+    <div class="smallPrompt" style="margin-top:12px">YOUR CODE</div>
+    <div class="sequence typedCode" style="margin-top:8px">
       ${code.map(()=>`<div class="seqBox blank typedCell">?</div>`).join("")}
     </div>
-    <div class="hint" style="margin-top:18px">Press the letters from left to right.</div>
   </div>`;
-  addPromptSpeaker(p,'Press all four secret letters in order from left to right.');
+  addPromptSpeaker(p,'Type the four-letter code in order. Every correct letter moves the agent closer to safety.');
 
   const typedCells=[...p.querySelectorAll('.typedCell')];
   const clueCells=[...p.querySelectorAll('.clueCell')];
-  clueCells[0].style.background='#fff8c9';
-
+  const agent=p.querySelector('.runnerAgent');
   clearKeyHandler();
   let locked=false;
   keyHandler=e=>{
-    if(locked)return;
-    if(!/^[a-zA-Z]$/.test(e.key))return;
-    const v=e.key.toUpperCase();
-    e.preventDefault();
-
+    if(locked||!SAFE_LETTERS.includes(e.key.toUpperCase()))return;
+    const v=e.key.toUpperCase();e.preventDefault();
     if(v===code[idx]){
       showTypedInBox(typedCells[idx],v,true);
       clueCells[idx].style.background='';
       idx++;
-      toast(idx>=code.length?"CODE COMPLETE!":"GOOD CLUE!");
+      agent.style.left=Math.min(82,idx*(82/code.length))+'%';
+      agent.classList.remove('jump');void agent.offsetWidth;agent.classList.add('jump');
+      toast(idx>=code.length?'AGENT MADE IT!':'MOVE!');
       if(idx<code.length)clueCells[idx].style.background='#fff8c9';
-      if(idx>=code.length){setTimeout(()=>showCodeReward(correct),350)}
+      if(idx>=code.length)setTimeout(()=>showCodeReward(correct),500);
     }else{
       locked=true;
       showTypedInBox(typedCells[idx],v,false,()=>{locked=false});
-      toast("THAT LETTER DOESN'T MATCH!")
+      toast('WRONG KEY — TRY AGAIN.');
     }
   };
   window.addEventListener("keydown",keyHandler)
@@ -1408,35 +1572,48 @@ function letterCode(){
 
 // CASE 8
 function numberCode(){
-  const code=Array.from({length:5},()=>number0to9());
+  const code=Array.from({length:5},()=>String(number0to9()));
   let idx=0;
-  setBriefing('💻','Crack the five-number code. Press the numbers in order.');
+  setBriefing('💻','Type the five-number code in order to move the agent to safety.');
   const p=basePanel();
-  function paint(){
-    p.innerHTML=`<div>
-      <div class="smallPrompt">SECRET NUMBER CODE</div>
-      <div class="sequence" style="margin-top:16px">
-        ${code.map((x,i)=>`<div class="seqBox" style="${i===idx?"background:#fff8c9":""}">${x}</div>`).join("")}
-      </div>
-      <div class="smallPrompt" style="margin-top:18px">YOUR CODE</div>
-      <div class="sequence" style="margin-top:10px">
-        ${code.map((x,i)=>`<div class="seqBox ${i>=idx?"blank":""}">${i<idx?x:"?"}</div>`).join("")}
-      </div>
-      <div class="hint" style="margin-top:18px">Press the numbers from left to right.</div>
-    </div>`
-  }
-  paint();
-  addPromptSpeaker(p,'Press all five secret numbers in order from left to right.');
+  p.innerHTML=`<div style="width:100%">
+    <div class="runnerTrack">
+      ${[20,40,60,80].map(x=>`<span class="checkpoint" style="left:${x}%"></span>`).join('')}
+      <img class="runnerAgent" src="agent_girl.png" alt="">
+    </div>
+    <div class="smallPrompt">SECRET NUMBER CODE</div>
+    <div class="sequence clueCode" style="margin-top:10px">
+      ${code.map((x,i)=>`<div class="seqBox clueCell" style="${i===0?'background:#fff8c9':''}">${x}</div>`).join("")}
+    </div>
+    <div class="smallPrompt" style="margin-top:12px">YOUR CODE</div>
+    <div class="sequence typedCode" style="margin-top:8px">
+      ${code.map(()=>`<div class="seqBox blank typedCell">?</div>`).join("")}
+    </div>
+  </div>`;
+  addPromptSpeaker(p,'Type the five-number code in order. Every correct number moves the agent closer to safety.');
+
+  const typedCells=[...p.querySelectorAll('.typedCell')];
+  const clueCells=[...p.querySelectorAll('.clueCell')];
+  const agent=p.querySelector('.runnerAgent');
   clearKeyHandler();
+  let locked=false;
   keyHandler=e=>{
-    if(!/^[0-9]$/.test(e.key))return;
-    e.preventDefault();
-    if(Number(e.key)===code[idx]){
+    if(locked||!SAFE_DIGITS.includes(e.key))return;
+    const v=e.key;e.preventDefault();
+    if(v===code[idx]){
+      showTypedInBox(typedCells[idx],v,true);
+      clueCells[idx].style.background='';
       idx++;
-      toast(idx>=code.length?"CODE COMPLETE!":"CODE MATCH!");
-      paint();
-      if(idx>=code.length){setTimeout(()=>showCodeReward(correct),350)}
-    }else toast("WRONG NUMBER — TRY AGAIN!")
+      agent.style.left=Math.min(82,idx*(82/code.length))+'%';
+      agent.classList.remove('jump');void agent.offsetWidth;agent.classList.add('jump');
+      toast(idx>=code.length?'AGENT MADE IT!':'MOVE!');
+      if(idx<code.length)clueCells[idx].style.background='#fff8c9';
+      if(idx>=code.length)setTimeout(()=>showCodeReward(correct),500);
+    }else{
+      locked=true;
+      showTypedInBox(typedCells[idx],v,false,()=>{locked=false});
+      toast('WRONG KEY — TRY AGAIN.');
+    }
   };
   window.addEventListener("keydown",keyHandler)
 }
