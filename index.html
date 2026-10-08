@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ms. Kaple's Keyboard Detective Agency</title>
 <style>
-@font-face{font-family:Homebody;src:url('./KAHomebodyClub.ttf') format('truetype');font-display:swap}
-@font-face{font-family:VAG;src:url('./VAGRoundedBlack.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Homebody;src:local('KA Homebody Club'),url('./KAHomebodyClub.ttf') format('truetype'),url('./KAHomebodyClub(2).ttf') format('truetype');font-display:swap}
+@font-face{font-family:VAG;src:local('VAG Rounded Std Black'),local('VAG Rounded'),url('./VAGRoundedBlack.ttf') format('truetype'),url('./VAG-Rounded-Std-Black_47296(1).ttf') format('truetype');font-display:swap}
 
 :root{
   --ink:#17202a;
@@ -54,6 +54,7 @@ main{padding:14px}
   max-width:1380px;margin:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px
 }
 .case-card{
+  position:relative;
   border:5px solid #17202a;border-radius:20px;background:white;overflow:hidden;cursor:pointer;
   box-shadow:0 5px 0 #17202a;min-height:260px;display:grid;grid-template-rows:auto 1fr auto
 }
@@ -372,8 +373,14 @@ main{padding:14px}
 .lockOverlay strong{display:block;font-size:19px;margin:4px}
 .lockOverlay .miniSpeak{margin-top:8px;color:#17202a}
 .completeStamp{
-  position:absolute;right:8px;bottom:44px;z-index:5;border:4px solid #166b33;border-radius:999px;
-  background:#dcf6e4;padding:5px 9px;font-size:14px;font-weight:900;transform:rotate(-4deg)
+  position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) rotate(-11deg);
+  z-index:12;width:86%;text-align:center;pointer-events:none;
+  border:7px solid #176b39;border-radius:18px;background:rgba(235,255,240,.94);
+  color:#176b39;padding:9px 8px;
+  font-family:Homebody,VAG,"Arial Rounded MT Bold",sans-serif;
+  font-size:clamp(34px,3.5vw,58px);line-height:1;
+  letter-spacing:2px;text-shadow:1px 1px 0 white;
+  box-shadow:0 4px 0 rgba(23,107,57,.28)
 }
 .rankHome .miniSpeak{justify-self:end}
 .rankChip .miniSpeak{padding:3px;width:34px;height:34px}
@@ -424,6 +431,29 @@ main{padding:14px}
 .missionDone{
   position:absolute;inset:0;z-index:75;background:rgba(255,240,94,.9);display:grid;place-items:center;text-align:center;
   font-family:Homebody,VAG,sans-serif;font-size:clamp(50px,8vw,105px)
+}
+
+
+/* Force VAG for all regular in-game reading text/buttons. */
+#game, #game button, #game .panel, #game #briefing, #game .badge,
+#game .smallPrompt, #game .mediumPrompt, #game .bigPrompt, #game .hint,
+#game .seqBox, #game .key, #game .rewardBox p, #game .rankUpBox p,
+#game .solveBox p, #game .rankChip, #game .missionPrompt, #game .vaultPanel,
+#game .codeCell, #game .targetKey {
+  font-family:VAG,"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif !important;
+}
+/* Titles stay Homebody. */
+#gameTitle, #game .rewardBox h2, #game .rankUpBox h2, #game .rankUpBox h3,
+#game .solveBox h2, #game .missionDone {
+  font-family:Homebody,VAG,"Arial Rounded MT Bold",sans-serif !important;
+}
+
+
+.rewardBox .evidenceContinue,.rankUpBox .rankContinue{
+  position:relative;z-index:3;min-width:190px;
+}
+.rewardBox .evidenceContinue:hover,.rankUpBox .rankContinue:hover{
+  transform:translateY(-1px);
 }
 
 </style>
@@ -664,10 +694,10 @@ function showRankUp(rank,afterContinue){
     <h3>${rank.title}</h3>
     <p>You earned a new badge!</p>
     <div class="readable rankSpeak"></div>
-    <button>CONTINUE CASE</button>
+    <button class="rankContinue">CONTINUE CASE</button>
   </div>`;
   d.querySelector('.rankSpeak').appendChild(makeSpeaker(`Rank up! You are now ${rank.title}. You earned a new badge.`));
-  d.querySelector('button').onclick=()=>{d.remove();afterContinue()};
+  d.querySelector('.rankContinue').onclick=()=>{d.remove();afterContinue()};
   stage.appendChild(d)
 }
 
@@ -701,7 +731,7 @@ function updateCaseCompletion(){
   document.querySelectorAll('.case-card').forEach((card,i)=>{
     let stamp=card.querySelector('.completeStamp');
     if(done[i]&&!stamp){
-      stamp=document.createElement('div');stamp.className='completeStamp';stamp.textContent='✓ COMPLETE';card.appendChild(stamp)
+      stamp=document.createElement('div');stamp.className='completeStamp';stamp.textContent='SOLVED';card.appendChild(stamp)
     }
     if(!done[i]&&stamp)stamp.remove()
   })
@@ -856,11 +886,11 @@ function maybeMiniEvidence(onClose){
     <img src="${found[0]}" alt="">
     <h2>EVIDENCE FOUND!</h2>
     <p>${found[1]}</p>
-    <div class="readable miniSpeak"></div>
-    <button>KEEP INVESTIGATING</button>
+    <div class="readable evidenceRead"></div>
+    <button class="evidenceContinue">KEEP INVESTIGATING</button>
   </div>`;
-  d.querySelector('.miniSpeak').appendChild(makeSpeaker(found[1]));
-  d.querySelector('button').onclick=()=>{
+  d.querySelector('.evidenceRead').appendChild(makeSpeaker(found[1]));
+  d.querySelector('.evidenceContinue').onclick=()=>{
     d.remove();
     if(onClose)onClose();
   };
