@@ -548,6 +548,33 @@ main{padding:14px}
   .badgeCollection{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
+
+.resetConfirm{
+  position:fixed;inset:0;z-index:300;background:rgba(18,27,35,.88);
+  display:grid;place-items:center;padding:20px
+}
+.resetConfirmBox{
+  width:min(720px,92vw);border:7px solid #17202a;border-radius:28px;background:white;
+  padding:25px 32px;text-align:center;box-shadow:0 10px 0 #17202a
+}
+.resetConfirmBox h2{
+  font-family:Homebody,VAG,"Arial Rounded MT Bold",sans-serif;
+  text-transform:uppercase;font-size:clamp(39px,6vw,68px);margin:0;color:#b42d2d
+}
+.resetConfirmBox p{
+  font-family:VAG,"Arial Rounded MT Bold",sans-serif;font-size:20px;line-height:1.25
+}
+.resetConfirmActions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.resetConfirmActions button{
+  border:4px solid #17202a;border-radius:14px;padding:11px 17px;
+  font-family:VAG,"Arial Rounded MT Bold",sans-serif;font-size:18px;cursor:pointer
+}
+.resetCancel{background:#dff7df}.resetYes{background:#ffd2d2}
+.epicPermanent{
+  display:inline-block;margin-top:3px;border:3px solid #17202a;border-radius:999px;
+  background:#fff1a8;padding:3px 9px;font-family:VAG,sans-serif;font-size:13px
+}
+
 </style>
 </head>
 <body>
@@ -562,7 +589,7 @@ main{padding:14px}
   </div>
   <nav>
     <button id="homeBtn">🗂️ CASES</button>
-    <button id="restartBtn" title="Clear all points, solved cases, and bonus progress and start again at Case 1">🔄 RESET GAME</button>
+    <button id="restartBtn" title="Start over only after confirming — this erases all saved progress">🔄 RESET GAME</button>
     <button id="prevBtn">◀ PREV</button>
     <button id="nextBtn">NEXT ▶</button>
   </nav>
@@ -706,6 +733,83 @@ if(window.visualViewport) window.visualViewport.addEventListener("resize",autoFi
 
 function savedKey(type){return "msKapleDetective_"+type+"_score"}
 
+const PROGRESS_BACKUP_KEY='msKapleDetective_progressBackup_v1';
+
+function progressSnapshot(){
+  const scores={};
+  cases.forEach(c=>scores[c.type]=Number(localStorage.getItem(savedKey(c.type))||0));
+  let completed=[],inventory=[],bonusCompleted={};
+  try{completed=JSON.parse(localStorage.getItem('msKapleDetective_completedCases')||'[]')}catch(e){}
+  try{inventory=JSON.parse(localStorage.getItem('msKapleDetective_inventory')||'[]')}catch(e){}
+  try{bonusCompleted=JSON.parse(localStorage.getItem('msKapleDetective_bonusCompleted')||'{}')}catch(e){}
+  return {
+    version:1,
+    savedAt:Date.now(),
+    agencyPoints:Number(localStorage.getItem('msKapleDetective_agencyPoints')||0),
+    completedCases:Array.from({length:cases.length},(_,i)=>Boolean(completed[i])),
+    inventory:Array.isArray(inventory)?[...new Set(inventory)]:[],
+    bonusCompleted:bonusCompleted&&typeof bonusCompleted==='object'?bonusCompleted:{},
+    epicCelebrated:localStorage.getItem('msKapleDetective_epicCelebrated')==='1',
+    scores
+  }
+}
+function snapshotHasProgress(s){
+  if(!s)return false;
+  return Number(s.agencyPoints)>0 ||
+    (Array.isArray(s.completedCases)&&s.completedCases.some(Boolean)) ||
+    (Array.isArray(s.inventory)&&s.inventory.length>0) ||
+    (s.bonusCompleted&&Object.values(s.bonusCompleted).some(Boolean)) ||
+    Boolean(s.epicCelebrated) ||
+    (s.scores&&Object.values(s.scores).some(v=>Number(v)>0))
+}
+function saveProgressBackup(){
+  try{
+    localStorage.setItem(PROGRESS_BACKUP_KEY,JSON.stringify(progressSnapshot()))
+  }catch(e){}
+}
+function primaryProgressExists(){
+  if(Number(localStorage.getItem('msKapleDetective_agencyPoints')||0)>0)return true;
+  try{
+    const a=JSON.parse(localStorage.getItem('msKapleDetective_completedCases')||'[]');
+    if(Array.isArray(a)&&a.some(Boolean))return true
+  }catch(e){}
+  try{
+    const a=JSON.parse(localStorage.getItem('msKapleDetective_inventory')||'[]');
+    if(Array.isArray(a)&&a.length)return true
+  }catch(e){}
+  try{
+    const o=JSON.parse(localStorage.getItem('msKapleDetective_bonusCompleted')||'{}');
+    if(o&&Object.values(o).some(Boolean))return true
+  }catch(e){}
+  if(localStorage.getItem('msKapleDetective_epicCelebrated')==='1')return true;
+  return cases.some(c=>Number(localStorage.getItem(savedKey(c.type))||0)>0)
+}
+function restoreProgressFromBackupIfNeeded(){
+  if(primaryProgressExists())return false;
+  let snap=null;
+  try{snap=JSON.parse(localStorage.getItem(PROGRESS_BACKUP_KEY)||'null')}catch(e){}
+  if(!snapshotHasProgress(snap))return false;
+
+  localStorage.setItem('msKapleDetective_agencyPoints',String(Number(snap.agencyPoints)||0));
+  localStorage.setItem('msKapleDetective_completedCases',JSON.stringify(
+    Array.from({length:cases.length},(_,i)=>Boolean((snap.completedCases||[])[i]))
+  ));
+  localStorage.setItem('msKapleDetective_inventory',JSON.stringify(Array.isArray(snap.inventory)?snap.inventory:[]));
+  localStorage.setItem('msKapleDetective_bonusCompleted',JSON.stringify(snap.bonusCompleted||{}));
+  if(snap.epicCelebrated)localStorage.setItem('msKapleDetective_epicCelebrated','1');
+  else localStorage.removeItem('msKapleDetective_epicCelebrated');
+
+  if(snap.scores){
+    cases.forEach(c=>{
+      const v=Number(snap.scores[c.type]||0);
+      if(v>0)localStorage.setItem(savedKey(c.type),String(v))
+    })
+  }
+  return true
+}
+window.addEventListener('beforeunload',saveProgressBackup);
+
+
 function speakText(text){
   if(!('speechSynthesis' in window)){toast('VOICE IS NOT AVAILABLE ON THIS COMPUTER.');return}
   window.speechSynthesis.cancel();
@@ -773,6 +877,7 @@ function getInventory(){
 }
 function saveInventory(ids){
   localStorage.setItem('msKapleDetective_inventory',JSON.stringify([...new Set(ids)]));
+  saveProgressBackup();
   updateMainCollections();
 }
 function collectObject(id){
@@ -796,6 +901,7 @@ function markBonusCompleted(id){
   const first=!done[id];
   done[id]=true;
   localStorage.setItem('msKapleDetective_bonusCompleted',JSON.stringify(done));
+  saveProgressBackup();
   updateBonusCompletion();
   updateMainCollections();
   return first
@@ -809,6 +915,7 @@ function epicCelebrated(){
 }
 function setEpicCelebrated(){
   localStorage.setItem('msKapleDetective_epicCelebrated','1');
+  saveProgressBackup();
   updateMainCollections()
 }
 function updateBonusCompletion(){
@@ -869,6 +976,7 @@ function updateMainCollections(){
 function getAgencyPoints(){return Number(localStorage.getItem('msKapleDetective_agencyPoints')||0)}
 function setAgencyPoints(v){
   localStorage.setItem('msKapleDetective_agencyPoints',String(Math.max(0,v)));
+  saveProgressBackup();
   updateRankDisplays();
   updateMainCollections()
 }
@@ -879,7 +987,19 @@ function rankIndexFor(points){
 }
 function currentRank(){
   const pts=getAgencyPoints();
-  return {index:rankIndexFor(pts),points:pts,...AGENCY_RANKS[rankIndexFor(pts)]}
+  if(localStorage.getItem('msKapleDetective_epicCelebrated')==='1'){
+    return {
+      index:AGENCY_RANKS.length,
+      points:pts,
+      min:pts,
+      next:null,
+      title:'EPIC SECRET AGENT',
+      img:'badge2_gold.png',
+      epic:true
+    }
+  }
+  const idx=rankIndexFor(pts);
+  return {index:idx,points:pts,...AGENCY_RANKS[idx]}
 }
 function updateRankDisplays(){
   const r=currentRank();
@@ -894,7 +1014,7 @@ function updateRankDisplays(){
     homeBox.innerHTML=`
       <img src="${r.img}" alt="">
       <div>
-        <div class="rankTitle">${r.title}</div>
+        <div class="rankTitle">${r.title}</div>${r.epic?'<div class="epicPermanent">LEVEL 1 COMPLETE • SAVED</div>':''}
         <div class="rankSub">${r.points} POINTS • ${nextText}</div>
         <div class="rankProgress"><div style="width:${pct}%"></div></div>
       </div>
@@ -932,6 +1052,7 @@ function getSaved(type){return Number(localStorage.getItem(savedKey(type))||0)}
 function setScore(v){
   score=v;scoreEl.textContent=v;
   localStorage.setItem(savedKey(cases[current].type),String(v));
+  saveProgressBackup();
 }
 function setRound(v){round=v;roundEl.textContent=v}
 
@@ -943,6 +1064,7 @@ function getCompletedCases(){
 }
 function saveCompletedCases(a){
   localStorage.setItem('msKapleDetective_completedCases',JSON.stringify(a));
+  saveProgressBackup();
 }
 function markCaseCompleted(i){
   const a=getCompletedCases();
@@ -1081,29 +1203,24 @@ function startCase(i){
   setupCase();
   setTimeout(autoFit,0);
 }
-function restartCase(){
-  // TRUE CLEAN-SLATE RESET for teacher demos / a brand-new student session.
+function performFullReset(){
   clearKeyHandler();
   if(window.speechSynthesis)window.speechSynthesis.cancel();
   window._currentBonusStart=null;
 
-  // Remove every saved case score.
   cases.forEach(c=>localStorage.removeItem(savedKey(c.type)));
-
-  // Remove all cumulative progress.
   localStorage.removeItem('msKapleDetective_agencyPoints');
   localStorage.removeItem('msKapleDetective_completedCases');
   localStorage.removeItem('msKapleDetective_inventory');
   localStorage.removeItem('msKapleDetective_bonusCompleted');
   localStorage.removeItem('msKapleDetective_epicCelebrated');
+  localStorage.removeItem(PROGRESS_BACKUP_KEY);
 
-  // Reset all in-memory game state.
   current=0;
   score=0;
   round=1;
   state={};
 
-  // Refresh every progress display before opening Case 1.
   scoreEl.textContent='0';
   roundEl.textContent='1';
   updateRankDisplays();
@@ -1112,7 +1229,6 @@ function restartCase(){
   updateBonusCompletion();
   updateMainCollections();
 
-  // Return to a completely fresh Case 1, Question 1.
   home.classList.remove("active");
   game.classList.add("active");
   document.getElementById("prevBtn").hidden=false;
@@ -1121,6 +1237,35 @@ function restartCase(){
   setupCase();
   setTimeout(autoFit,0);
 }
+function requestFullReset(){
+  clearKeyHandler();
+  const old=document.querySelector('.resetConfirm');if(old)old.remove();
+
+  const d=document.createElement('div');d.className='resetConfirm';
+  d.innerHTML=`<div class="resetConfirmBox">
+    <h2>START OVER?</h2>
+    <p><strong>ARE YOU SURE?</strong></p>
+    <p>This will erase ALL solved cases, points, badges, briefcase objects, bonus missions, and Epic Agent progress on this Chromebook.</p>
+    <p>If you do not want to erase everything, choose <strong>NO — KEEP MY PROGRESS</strong>.</p>
+    <div class="readable resetRead"></div>
+    <div class="resetConfirmActions">
+      <button class="resetCancel">NO — KEEP MY PROGRESS</button>
+      <button class="resetYes">YES — START OVER</button>
+    </div>
+  </div>`;
+  d.querySelector('.resetRead').appendChild(makeSpeaker('Are you sure you want to start over? This will erase all solved cases, points, badges, briefcase objects, bonus missions, and Epic Agent progress. Choose no to keep your progress.'));
+  d.querySelector('.resetCancel').onclick=()=>{
+    d.remove();
+    if(game.classList.contains('active'))setupCase();
+  };
+  d.querySelector('.resetYes').onclick=()=>{
+    d.remove();
+    performFullReset();
+  };
+  document.body.appendChild(d)
+}
+function restartCase(){requestFullReset()}
+
 document.getElementById("homeBtn").onclick=showHome;
 document.getElementById("restartBtn").onclick=restartCase;
 document.getElementById("prevBtn").onclick=()=>startCase(current-1);
@@ -1192,13 +1337,14 @@ function correct(){
 function solved(){
   clearKeyHandler();
   const firstTime=markCaseCompleted(current);
+  saveProgressBackup();
   const unlockedNow=bonusesUnlocked()&&firstTime;
   const d=document.createElement("div");d.className="solve";
   const rank=currentRank();
   const until=rank.next?Math.max(0,rank.next-rank.points):0;
   d.innerHTML=`<div class="solveBox"><img src="${unlockedNow?'badge2_gold.png':rank.img}" style="width:140px;height:150px;object-fit:contain" alt=""><h2>CASE SOLVED!</h2>
   <p>${rank.points} POINTS<br>${rank.next?`${until} POINT${until===1?'':'S'} UNTIL NEXT BADGE`:'TOP BADGE EARNED!'}</p>
-  ${unlockedNow?'<p><strong>🔓 BONUS MISSIONS UNLOCKED!</strong></p>':''}
+  ${unlockedNow?'<p><strong>🔓 BONUS MISSIONS UNLOCKED!</strong></p>':''}<p><strong>✓ PROGRESS SAVED</strong></p>
   <div class="readable" id="solveRead"></div><button class="again">PLAY CASE AGAIN</button><button class="cases">CASE FILES</button></div>`;
   d.querySelector('#solveRead').appendChild(makeSpeaker(`Case solved! You have ${rank.points} points. ${rank.next?`${until} points until your next badge.`:'You earned the top badge.'} ${unlockedNow?'Bonus missions are now unlocked.':''}`));
   d.querySelector(".again").onclick=()=>{d.remove();setRound(1);setupCase()};
@@ -1321,6 +1467,7 @@ function startBonusShell(title,startFn){
 function showEpicAgentCelebration(scene,startFn){
   clearKeyHandler();
   setEpicCelebrated();
+  saveProgressBackup();
   const d=document.createElement('div');d.className='epicCelebration';
   d.innerHTML=`<div class="epicBox">
     <div class="epicAgents">
@@ -1331,7 +1478,7 @@ function showEpicAgentCelebration(scene,startFn){
     <h2>EPIC SECRET AGENT!</h2>
     <h3>YOU COMPLETED THE WHOLE AGENCY!</h3>
     <p>ALL 8 CASE FILES SOLVED</p>
-    <p>ALL 4 BONUS MISSIONS SOLVED</p>
+    <p>ALL 4 BONUS MISSIONS SOLVED</p><p><strong>✓ YOUR PROGRESS IS SAVED</strong></p>
     <div class="readable epicRead"></div>
     <button class="epicCases">AGENT HEADQUARTERS</button>
     <button class="epicAgain">PLAY THIS BONUS AGAIN</button>
@@ -1350,6 +1497,7 @@ function finishBonus(scene,title,points,startFn,bonusId){
   setAgencyPoints(before.points+points);
   const after=currentRank();
   const firstCompletion=markBonusCompleted(bonusId);
+  saveProgressBackup();
   const epicNow=firstCompletion && allBonusesCompleted() && !epicCelebrated();
 
   if(epicNow){
