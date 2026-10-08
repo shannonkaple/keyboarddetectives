@@ -456,6 +456,98 @@ main{padding:14px}
   transform:translateY(-1px);
 }
 
+
+/* MAIN-PAGE AGENT HEADQUARTERS */
+.hqCollections{
+  max-width:1380px;margin:0 auto 18px;display:grid;grid-template-columns:1.12fr .88fr;gap:14px
+}
+.briefcaseHQ,.badgeHQ{
+  border:5px solid #17202a;border-radius:21px;background:#fff;overflow:hidden;
+  box-shadow:0 5px 0 #17202a
+}
+.hqTitle{
+  min-height:54px;padding:8px 12px;border-bottom:4px solid #17202a;background:#ffd84a;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-family:Homebody,VAG,"Arial Rounded MT Bold",sans-serif;
+  font-size:clamp(25px,2.5vw,39px);text-transform:uppercase
+}
+.badgeHQ .hqTitle{background:#8edcff}
+.briefcaseBody{
+  min-height:235px;padding:13px;display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:center;
+  background:linear-gradient(135deg,#f7ebcf,#e7c994)
+}
+.briefcaseHero{width:165px;height:185px;object-fit:contain;filter:drop-shadow(0 5px 3px rgba(0,0,0,.2))}
+.briefcaseContents{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px
+}
+.collectibleSlot{
+  min-height:96px;border:4px solid #17202a;border-radius:15px;background:rgba(255,255,255,.94);
+  display:grid;grid-template-columns:64px 1fr;align-items:center;gap:6px;padding:7px
+}
+.collectibleSlot img{width:62px;height:70px;object-fit:contain}
+.collectibleSlot.locked{opacity:.46;filter:grayscale(1)}
+.collectibleSlot.locked img{opacity:.22}
+.collectibleName{font-size:13px;line-height:1.05}
+.collectionCheck{font-size:12px;color:#176b39;margin-top:3px}
+.badgeCollection{
+  min-height:235px;padding:14px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;
+  align-content:center;background:linear-gradient(#eefaff,#fff)
+}
+.badgeSlot{
+  position:relative;min-height:105px;border:4px solid #17202a;border-radius:15px;background:#fff;
+  display:grid;justify-items:center;align-content:center;text-align:center;padding:7px
+}
+.badgeSlot img{width:68px;height:68px;object-fit:contain}
+.badgeSlot .badgeName{font-size:12px;line-height:1.05;margin-top:2px}
+.badgeSlot.locked{opacity:.38;filter:grayscale(1)}
+.badgeSlot .earnedMark{
+  position:absolute;right:4px;top:3px;border:2px solid #176b39;background:#e0f8e7;border-radius:50%;
+  width:25px;height:25px;display:grid;place-items:center;font-size:14px
+}
+.badgeSlot.epic{
+  background:#fff1a8;box-shadow:inset 0 0 0 4px #f2b600;grid-column:span 1
+}
+.bonusSolvedStamp{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-10deg);
+  z-index:14;width:84%;text-align:center;pointer-events:none;
+  border:6px solid #176b39;border-radius:17px;background:rgba(235,255,240,.95);color:#176b39;
+  padding:7px;font-family:Homebody,VAG,sans-serif;font-size:clamp(26px,2.8vw,45px);
+  letter-spacing:1px;box-shadow:0 4px 0 rgba(23,107,57,.25)
+}
+.epicCelebration{
+  position:absolute;inset:0;z-index:120;background:
+  radial-gradient(circle at 50% 28%,#fffbd3 0 20%,rgba(255,255,255,.96) 48%,rgba(232,247,255,.98) 100%);
+  display:grid;place-items:center;text-align:center;padding:20px
+}
+.epicBox{
+  width:min(850px,88%);border:8px solid #17202a;border-radius:31px;background:white;
+  padding:25px 35px;box-shadow:0 11px 0 #17202a
+}
+.epicAgents{display:flex;align-items:center;justify-content:center;gap:8px}
+.epicAgents img{width:145px;height:175px;object-fit:contain}
+.epicAgents .epicBadge{width:165px;height:165px}
+.epicBox h2{
+  font-family:Homebody,VAG,sans-serif;text-transform:uppercase;font-size:clamp(48px,7vw,92px);
+  margin:0;color:#bb7f00
+}
+.epicBox h3{
+  font-family:Homebody,VAG,sans-serif;text-transform:uppercase;font-size:clamp(31px,4vw,53px);
+  margin:3px 0 7px
+}
+.epicBox p{font-family:VAG,sans-serif;font-size:21px;margin:7px}
+.epicBox button{
+  border:4px solid #17202a;border-radius:14px;background:#ffd84a;padding:10px 17px;
+  font-family:VAG,sans-serif;font-size:18px;margin:5px;cursor:pointer
+}
+@media(max-width:950px){
+  .hqCollections{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .briefcaseBody{grid-template-columns:1fr;justify-items:center}
+  .briefcaseContents{grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .badgeCollection{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
 </style>
 </head>
 <body>
@@ -470,7 +562,7 @@ main{padding:14px}
   </div>
   <nav>
     <button id="homeBtn">🗂️ CASES</button>
-    <button id="restartBtn">🔄 RESTART CASE</button>
+    <button id="restartBtn" title="Clear all points, solved cases, and bonus progress and start again at Case 1">🔄 RESET GAME</button>
     <button id="prevBtn">◀ PREV</button>
     <button id="nextBtn">NEXT ▶</button>
   </nav>
@@ -480,6 +572,22 @@ main{padding:14px}
   <section id="home" class="view active">
     <div class="case-note">🔎 DETECTIVES: CHOOSE A CASE FILE AND USE YOUR KEYBOARD TO SOLVE IT!</div>
     <div id="agencyRankHome" class="rankHome"></div>
+
+    <div class="hqCollections">
+      <section class="briefcaseHQ">
+        <div class="hqTitle"><span>AGENT BRIEFCASE</span><span id="briefcaseRead"></span></div>
+        <div class="briefcaseBody">
+          <img class="briefcaseHero" src="briefcase.png" alt="">
+          <div id="briefcaseContents" class="briefcaseContents"></div>
+        </div>
+      </section>
+
+      <section class="badgeHQ">
+        <div class="hqTitle"><span>BADGE CASE</span><span id="badgeCaseRead"></span></div>
+        <div id="badgeCollection" class="badgeCollection"></div>
+      </section>
+    </div>
+
     <div id="caseGrid" class="case-grid"></div>
     <div class="bonusHeader">BONUS MISSIONS <span id="bonusHeaderRead"></span></div>
     <div id="bonusUnlockNote" class="unlockNote"></div>
@@ -640,10 +748,129 @@ const AGENCY_RANKS=[
   {min:30, next:45,  title:'MASTER DETECTIVE', img:'badge_gold.png'},
   {min:45, next:null, title:'CHIEF INVESTIGATOR', img:'badge2_gold.png'}
 ];
+
+const COLLECTIBLES=[
+  {id:'magnifier',name:'MAGNIFYING GLASS',img:'magnifier.png'},
+  {id:'folder',name:'SECRET CASE FILE',img:'folder_agent.png'},
+  {id:'fingerprint',name:'FINGERPRINT KIT',img:'fingerprint.png'},
+  {id:'camera',name:'SECRET CAMERA',img:'camera_agent.png'},
+  {id:'radio',name:'SPY RADIO',img:'radio.png'},
+  {id:'briefcase',name:'AGENT BRIEFCASE',img:'briefcase.png'}
+];
+const BONUS_IDS=['chase','rush','laser','vault'];
+const BONUS_DOM={
+  chase:'bonusChase',
+  rush:'bonusRush',
+  laser:'bonusLaser',
+  vault:'bonusVault'
+};
+
+function getInventory(){
+  try{
+    const raw=JSON.parse(localStorage.getItem('msKapleDetective_inventory')||'[]');
+    return [...new Set(raw)].filter(id=>COLLECTIBLES.some(x=>x.id===id));
+  }catch(e){return []}
+}
+function saveInventory(ids){
+  localStorage.setItem('msKapleDetective_inventory',JSON.stringify([...new Set(ids)]));
+  updateMainCollections();
+}
+function collectObject(id){
+  const ids=getInventory();
+  if(ids.includes(id))return false;
+  ids.push(id);saveInventory(ids);return true
+}
+function nextUncollectedObject(){
+  const owned=new Set(getInventory());
+  const missing=COLLECTIBLES.filter(x=>!owned.has(x.id));
+  return missing.length?random(missing):null
+}
+function getBonusCompleted(){
+  try{
+    const raw=JSON.parse(localStorage.getItem('msKapleDetective_bonusCompleted')||'{}');
+    return Object.fromEntries(BONUS_IDS.map(id=>[id,Boolean(raw[id])]))
+  }catch(e){return Object.fromEntries(BONUS_IDS.map(id=>[id,false]))}
+}
+function markBonusCompleted(id){
+  const done=getBonusCompleted();
+  const first=!done[id];
+  done[id]=true;
+  localStorage.setItem('msKapleDetective_bonusCompleted',JSON.stringify(done));
+  updateBonusCompletion();
+  updateMainCollections();
+  return first
+}
+function allBonusesCompleted(){
+  const done=getBonusCompleted();
+  return BONUS_IDS.every(id=>done[id])
+}
+function epicCelebrated(){
+  return localStorage.getItem('msKapleDetective_epicCelebrated')==='1'
+}
+function setEpicCelebrated(){
+  localStorage.setItem('msKapleDetective_epicCelebrated','1');
+  updateMainCollections()
+}
+function updateBonusCompletion(){
+  const done=getBonusCompleted();
+  BONUS_IDS.forEach(id=>{
+    const card=document.getElementById(BONUS_DOM[id]);if(!card)return;
+    let stamp=card.querySelector('.bonusSolvedStamp');
+    if(done[id]&&!stamp){
+      stamp=document.createElement('div');stamp.className='bonusSolvedStamp';stamp.textContent='MISSION SOLVED';card.appendChild(stamp)
+    }
+    if(!done[id]&&stamp)stamp.remove()
+  })
+}
+function updateMainCollections(){
+  const inventory=new Set(getInventory());
+  const caseBox=document.getElementById('briefcaseContents');
+  if(caseBox){
+    caseBox.innerHTML=COLLECTIBLES.map(item=>`
+      <div class="collectibleSlot ${inventory.has(item.id)?'':'locked'}">
+        <img src="${item.img}" alt="">
+        <div><div class="collectibleName">${item.name}</div>
+        <div class="collectionCheck">${inventory.has(item.id)?'✓ COLLECTED':'NOT FOUND YET'}</div></div>
+      </div>`).join('');
+  }
+
+  const points=getAgencyPoints();
+  const badgeBox=document.getElementById('badgeCollection');
+  if(badgeBox){
+    const rankSlots=AGENCY_RANKS.map(rank=>{
+      const earned=points>=rank.min;
+      return `<div class="badgeSlot ${earned?'':'locked'}">
+        ${earned?'<span class="earnedMark">✓</span>':''}
+        <img src="${rank.img}" alt="">
+        <div class="badgeName">${rank.title}</div>
+      </div>`
+    }).join('');
+    const epic=allBonusesCompleted();
+    badgeBox.innerHTML=rankSlots+`<div class="badgeSlot epic ${epic?'':'locked'}">
+      ${epic?'<span class="earnedMark">★</span>':''}
+      <img src="badge2_gold.png" alt="">
+      <div class="badgeName">EPIC SECRET AGENT</div>
+    </div>`;
+  }
+
+  const br=document.getElementById('briefcaseRead');
+  if(br){
+    br.innerHTML='';
+    br.appendChild(makeSpeaker(`Agent briefcase. You have collected ${inventory.size} of ${COLLECTIBLES.length} unique detective objects. Each object is collected only one time.`,'miniSpeak'));
+  }
+  const bc=document.getElementById('badgeCaseRead');
+  if(bc){
+    const earned=AGENCY_RANKS.filter(r=>points>=r.min).length+(allBonusesCompleted()?1:0);
+    bc.innerHTML='';
+    bc.appendChild(makeSpeaker(`Badge case. You have earned ${earned} badge${earned===1?'':'s'}. Locked badges will appear as you earn more points. Complete all four bonus missions to become an Epic Secret Agent.`,'miniSpeak'));
+  }
+}
+
 function getAgencyPoints(){return Number(localStorage.getItem('msKapleDetective_agencyPoints')||0)}
 function setAgencyPoints(v){
   localStorage.setItem('msKapleDetective_agencyPoints',String(Math.max(0,v)));
-  updateRankDisplays()
+  updateRankDisplays();
+  updateMainCollections()
 }
 function rankIndexFor(points){
   let idx=0;
@@ -725,7 +952,10 @@ function markCaseCompleted(i){
   return first;
 }
 function completedCaseCount(){return getCompletedCases().filter(Boolean).length}
-function bonusesUnlocked(){return completedCaseCount()===cases.length}
+function bonusesUnlocked(){
+  const completed=getCompletedCases();
+  return completed.length===cases.length && completed.every(Boolean)
+}
 function updateCaseCompletion(){
   const done=getCompletedCases();
   document.querySelectorAll('.case-card').forEach((card,i)=>{
@@ -769,7 +999,8 @@ function updateBonusLocks(){
       ov.querySelector('.lockRead').appendChild(makeSpeaker(text,'miniSpeak'));
       card.appendChild(ov);
     }
-  })
+  });
+  updateBonusCompletion()
 }
 
 function clearKeyHandler(){
@@ -831,6 +1062,8 @@ function showHome(){
   updateRankDisplays();
   updateCaseCompletion();
   updateBonusLocks();
+  updateBonusCompletion();
+  updateMainCollections();
   document.getElementById("prevBtn").hidden=false;
   document.getElementById("nextBtn").hidden=false;
   setTimeout(autoFit,0);
@@ -849,9 +1082,44 @@ function startCase(i){
   setTimeout(autoFit,0);
 }
 function restartCase(){
-  if(window._currentBonusStart && document.getElementById("prevBtn").hidden){window._currentBonusStart();return}
-  localStorage.setItem(savedKey(cases[current].type),"0");
-  score=0;scoreEl.textContent=0;setRound(1);setupCase();
+  // TRUE CLEAN-SLATE RESET for teacher demos / a brand-new student session.
+  clearKeyHandler();
+  if(window.speechSynthesis)window.speechSynthesis.cancel();
+  window._currentBonusStart=null;
+
+  // Remove every saved case score.
+  cases.forEach(c=>localStorage.removeItem(savedKey(c.type)));
+
+  // Remove all cumulative progress.
+  localStorage.removeItem('msKapleDetective_agencyPoints');
+  localStorage.removeItem('msKapleDetective_completedCases');
+  localStorage.removeItem('msKapleDetective_inventory');
+  localStorage.removeItem('msKapleDetective_bonusCompleted');
+  localStorage.removeItem('msKapleDetective_epicCelebrated');
+
+  // Reset all in-memory game state.
+  current=0;
+  score=0;
+  round=1;
+  state={};
+
+  // Refresh every progress display before opening Case 1.
+  scoreEl.textContent='0';
+  roundEl.textContent='1';
+  updateRankDisplays();
+  updateCaseCompletion();
+  updateBonusLocks();
+  updateBonusCompletion();
+  updateMainCollections();
+
+  // Return to a completely fresh Case 1, Question 1.
+  home.classList.remove("active");
+  game.classList.add("active");
+  document.getElementById("prevBtn").hidden=false;
+  document.getElementById("nextBtn").hidden=false;
+  gameTitle.textContent=cases[0].title;
+  setupCase();
+  setTimeout(autoFit,0);
 }
 document.getElementById("homeBtn").onclick=showHome;
 document.getElementById("restartBtn").onclick=restartCase;
@@ -874,22 +1142,30 @@ function maybeMiniEvidence(onClose){
     return;
   }
   clearKeyHandler();
-  const finds=[
-    ['camera_agent.png','YOU FOUND A SECRET CAMERA!'],
-    ['fingerprint.png','YOU FOUND A FINGERPRINT!'],
-    ['radio.png','YOU FOUND A SPY RADIO!'],
-    ['briefcase.png','YOU FOUND A SECRET BRIEFCASE!']
-  ];
-  const found=finds[Math.floor(Math.random()*finds.length)];
+  const found=nextUncollectedObject();
   const d=document.createElement('div');d.className='reward';
-  d.innerHTML=`<div class="rewardBox">
-    <img src="${found[0]}" alt="">
-    <h2>EVIDENCE FOUND!</h2>
-    <p>${found[1]}</p>
-    <div class="readable evidenceRead"></div>
-    <button class="evidenceContinue">KEEP INVESTIGATING</button>
-  </div>`;
-  d.querySelector('.evidenceRead').appendChild(makeSpeaker(found[1]));
+
+  if(found){
+    collectObject(found.id);
+    d.innerHTML=`<div class="rewardBox">
+      <img src="${found.img}" alt="">
+      <h2>EVIDENCE FOUND!</h2>
+      <p>YOU ADDED THE ${found.name} TO YOUR AGENT BRIEFCASE!</p>
+      <div class="readable evidenceRead"></div>
+      <button class="evidenceContinue">KEEP INVESTIGATING</button>
+    </div>`;
+    d.querySelector('.evidenceRead').appendChild(makeSpeaker(`Evidence found! You added the ${found.name} to your agent briefcase. You only collect each object one time.`));
+  }else{
+    d.innerHTML=`<div class="rewardBox">
+      <img src="briefcase.png" alt="">
+      <h2>BRIEFCASE COMPLETE!</h2>
+      <p>YOU ALREADY FOUND ALL ${COLLECTIBLES.length} DETECTIVE OBJECTS!</p>
+      <div class="readable evidenceRead"></div>
+      <button class="evidenceContinue">KEEP INVESTIGATING</button>
+    </div>`;
+    d.querySelector('.evidenceRead').appendChild(makeSpeaker(`Your agent briefcase is complete. You already found all ${COLLECTIBLES.length} detective objects.`));
+  }
+
   d.querySelector('.evidenceContinue').onclick=()=>{
     d.remove();
     if(onClose)onClose();
@@ -1042,19 +1318,53 @@ function startBonusShell(title,startFn){
   stage.innerHTML='<div id="toast"></div>';
   window._currentBonusStart=startFn;
 }
-function finishBonus(scene,title,points,startFn){
+function showEpicAgentCelebration(scene,startFn){
+  clearKeyHandler();
+  setEpicCelebrated();
+  const d=document.createElement('div');d.className='epicCelebration';
+  d.innerHTML=`<div class="epicBox">
+    <div class="epicAgents">
+      <img src="agent_boy.png" alt="">
+      <img class="epicBadge" src="badge2_gold.png" alt="">
+      <img src="agent_girl.png" alt="">
+    </div>
+    <h2>EPIC SECRET AGENT!</h2>
+    <h3>YOU COMPLETED THE WHOLE AGENCY!</h3>
+    <p>ALL 8 CASE FILES SOLVED</p>
+    <p>ALL 4 BONUS MISSIONS SOLVED</p>
+    <div class="readable epicRead"></div>
+    <button class="epicCases">AGENT HEADQUARTERS</button>
+    <button class="epicAgain">PLAY THIS BONUS AGAIN</button>
+  </div>`;
+  d.querySelector('.epicRead').appendChild(makeSpeaker(`Amazing work! You are now an Epic Secret Agent. You solved all eight case files and all four bonus missions.`));
+  d.querySelector('.epicCases').onclick=showHome;
+  d.querySelector('.epicAgain').onclick=startFn;
+  scene.appendChild(d);
+  showFunConfetti(d);
+  setTimeout(()=>showFunConfetti(d),550)
+}
+
+function finishBonus(scene,title,points,startFn,bonusId){
   clearKeyHandler();
   const before=currentRank();
   setAgencyPoints(before.points+points);
   const after=currentRank();
+  const firstCompletion=markBonusCompleted(bonusId);
+  const epicNow=firstCompletion && allBonusesCompleted() && !epicCelebrated();
+
+  if(epicNow){
+    showEpicAgentCelebration(scene,startFn);
+    return;
+  }
+
   const flash=document.createElement('div');flash.className='missionDone';
   flash.innerHTML=`<div><img src="${after.img}" style="width:160px;height:160px;object-fit:contain"><br>${title}
     <div style="font-family:VAG;font-size:26px;margin-top:7px">+${points} POINTS</div>
     <div class="doneRead"></div>
     <button class="againBonus" style="margin-top:12px;border:4px solid #17202a;border-radius:13px;padding:9px 16px;background:#fff">PLAY AGAIN</button>
-    <button class="casesBonus" style="margin-top:12px;border:4px solid #17202a;border-radius:13px;padding:9px 16px;background:#fff">CASE FILES</button>
+    <button class="casesBonus" style="margin-top:12px;border:4px solid #17202a;border-radius:13px;padding:9px 16px;background:#fff">AGENT HEADQUARTERS</button>
   </div>`;
-  flash.querySelector('.doneRead').appendChild(makeSpeaker(`${title}. You earned ${points} points. ${after.next?`${after.next-after.points} points until your next badge.`:'You earned the top badge.'}`));
+  flash.querySelector('.doneRead').appendChild(makeSpeaker(`${title}. You earned ${points} points. ${firstCompletion?'This bonus mission is now marked solved. ':''}${after.next?`${after.next-after.points} points until your next badge.`:'You earned the top badge.'}`));
   flash.querySelector('.againBonus').onclick=startFn;
   flash.querySelector('.casesBonus').onclick=showHome;
   scene.appendChild(flash);
@@ -1081,7 +1391,7 @@ function startBonusChase(){
     const val=e.key.toUpperCase();
     if(val!==target){toast('TRY AGAIN.');return}
     e.preventDefault();steps++;agent.style.left=Math.min(78,steps*8)+'%';meter.style.width=Math.min(100,steps*10)+'%';
-    if(steps>=10)finishBonus(scene,'SUSPECT CAUGHT!',3,startBonusChase);else nextTarget()
+    if(steps>=10)finishBonus(scene,'SUSPECT CAUGHT!',3,startBonusChase,'chase');else nextTarget()
   };
   window.addEventListener('keydown',keyHandler);setTimeout(autoFit,0)
 }
@@ -1107,7 +1417,7 @@ function startEvidenceRush(){
     const val=e.key.toUpperCase();
     if(val!==target){toast('TRY AGAIN.');return}
     e.preventDefault();locked=true;hits++;meter.style.width=(hits/8*100)+'%';card.classList.remove('fly');card.style.background='#dff7df';
-    setTimeout(()=>{card.style.background='#fff';locked=false;if(hits>=8)finishBonus(scene,'EVIDENCE SECURED!',3,startEvidenceRush);else launch()},260)
+    setTimeout(()=>{card.style.background='#fff';locked=false;if(hits>=8)finishBonus(scene,'EVIDENCE SECURED!',3,startEvidenceRush,'rush');else launch()},260)
   };
   window.addEventListener('keydown',keyHandler);setTimeout(autoFit,0)
 }
@@ -1131,7 +1441,7 @@ function startLaserEscape(){
     const val=e.key.toUpperCase();
     if(val!==target){toast('TRY AGAIN.');return}
     e.preventDefault();gates++;laser.classList.add('off');agent.style.left=Math.min(82,gates*(82/8))+'%';meter.style.width=(gates/8*100)+'%';
-    setTimeout(()=>{if(gates>=8)finishBonus(scene,'LASERS DISABLED!',3,startLaserEscape);else next()},350)
+    setTimeout(()=>{if(gates>=8)finishBonus(scene,'LASERS DISABLED!',3,startLaserEscape,'laser');else next()},350)
   };
   window.addEventListener('keydown',keyHandler);setTimeout(autoFit,0)
 }
@@ -1160,7 +1470,7 @@ function startBonusVault(){
     e.preventDefault();
     if(v===code[idx]){
       typedCells[idx].textContent=v;typedCells[idx].style.background='#dff7df';clueCells[idx].classList.remove('active');idx++;
-      if(idx>=code.length)finishBonus(scene,'VAULT OPEN!',3,startBonusVault);else clueCells[idx].classList.add('active')
+      if(idx>=code.length)finishBonus(scene,'VAULT OPEN!',3,startBonusVault,'vault');else clueCells[idx].classList.add('active')
     }else{
       locked=true;typedCells[idx].textContent=v;typedCells[idx].style.background='#ffd7df';toast('TRY THAT CODE SPOT AGAIN.');
       setTimeout(()=>{typedCells[idx].textContent='?';typedCells[idx].style.background='';locked=false},500)
@@ -1180,6 +1490,8 @@ launchBonus('bonusLaser',startLaserEscape);
 launchBonus('bonusVault',startBonusVault);
 updateCaseCompletion();
 updateBonusLocks();
+updateBonusCompletion();
+updateMainCollections();
 
 
 const homeCaseNote=document.querySelector('.case-note');
@@ -1529,27 +1841,35 @@ function missingNumber(){
 }
 
 
-const codeRewards=[
-  {img:'badge_gold.png',name:'GOLD AGENT BADGE'},
-  {img:'badge_silver.png',name:'SILVER AGENT BADGE'},
-  {img:'camera_agent.png',name:'SECRET CAMERA'},
-  {img:'briefcase.png',name:'AGENT BRIEFCASE'},
-  {img:'radio.png',name:'SECRET RADIO'}
-];
 function showCodeReward(nextAction){
   clearKeyHandler();
-  const reward=codeRewards[Math.floor(Math.random()*codeRewards.length)];
+  const reward=nextUncollectedObject();
   const d=document.createElement('div');d.className='reward';
-  d.innerHTML=`<div class="rewardBox">
-    <img src="${reward.img}" alt="">
-    <h2>CODE CRACKED!</h2>
-    <p>YOU EARNED THE ${reward.name}!</p>
-    <div class="readable rewardSpeak"></div>
-    <button class="continueReward">CONTINUE CASE</button>
-  </div>`;
-  d.querySelector('.rewardSpeak').appendChild(makeSpeaker(`Code cracked! You earned the ${reward.name}.`));
+
+  if(reward){
+    collectObject(reward.id);
+    d.innerHTML=`<div class="rewardBox">
+      <img src="${reward.img}" alt="">
+      <h2>CODE CRACKED!</h2>
+      <p>YOU ADDED THE ${reward.name} TO YOUR AGENT BRIEFCASE!</p>
+      <div class="readable rewardSpeak"></div>
+      <button class="continueReward">CONTINUE CASE</button>
+    </div>`;
+    d.querySelector('.rewardSpeak').appendChild(makeSpeaker(`Code cracked! You added the ${reward.name} to your agent briefcase. Each object is collected only one time.`));
+  }else{
+    d.innerHTML=`<div class="rewardBox">
+      <img src="briefcase.png" alt="">
+      <h2>CODE CRACKED!</h2>
+      <p>YOUR AGENT BRIEFCASE IS ALREADY COMPLETE!</p>
+      <div class="readable rewardSpeak"></div>
+      <button class="continueReward">CONTINUE CASE</button>
+    </div>`;
+    d.querySelector('.rewardSpeak').appendChild(makeSpeaker(`Code cracked! Your agent briefcase is already complete.`));
+  }
+
   d.querySelector('.continueReward').onclick=()=>{d.remove();nextAction()};
-  stage.appendChild(d)
+  stage.appendChild(d);
+  showFunConfetti(d)
 }
 
 // CASE 7
